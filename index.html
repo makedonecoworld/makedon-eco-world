@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>🌍 Makedon Eco World – Светска Платформа за Собирање Шишиња</title>
+  <meta name="description" content="Собирај шишиња, добивај EcoPoints, конвертирај во пари или награди. Глобално. Безбедно. Автоматизирано."/>
+  <meta name="theme-color" content="#2ecc71"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Makedon Eco World&quot;,&quot;short_name&quot;:&quot;EcoWorld&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#f8f9fa&quot;,&quot;theme_color&quot;:&quot;#2ecc71&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌱%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}"/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌱%3C/text%3E%3C/svg%3E"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  
+  <style>
+    :root{--primary:#2ecc71;--primary-dark:#27ae60;--secondary:#3498db;--accent:#f39c12;--dark:#2c3e50;--light:#ecf0f1;--danger:#e74c3c;--success:#2ecc71;--gradient:linear-gradient(135deg,#2ecc71 0%,#3498db 50%,#9b59b6 100%);--shadow:0 10px 30px rgba(0,0,0,.15);--card-shadow:0 5px 20px rgba(0,0,0,.08);--border-radius:16px;--transition:all .3s cubic-bezier(.175,.885,.32,1.27)}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;-webkit-tap-highlight-color:transparent}
+    html{scroll-behavior:smooth}
+    body{background:linear-gradient(135deg,#f8f9fa 0%,#e8f5e9 50%,#d4edda 100%);color:var(--dark);line-height:1.6;overflow-x:hidden;min-height:100vh}
+    .container{max-width:1400px;margin:0 auto;padding:0 20px}
+    
+    /* ===== HEADER ===== */
+    header{background:var(--gradient);color:#fff;padding:1rem 0;position:sticky;top:0;z-index:1000;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+    .header-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .logo{display:flex;align-items:center;gap:12px;font-size:1.8rem;font-weight:800;cursor:pointer}
+    .logo i{font-size:2.2rem;animation:pulse 2s infinite}
+    .logo span{background:linear-gradient(to right,#fff,#e0f7fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    nav ul{display:flex;list-style:none;gap:1rem}
+    nav a{color:#fff;text-decoration:none;font-weight:500;padding:8px 16px;border-radius:25px;transition:var(--transition);position:relative}
+    nav a:hover,nav a.active{background:rgba(255,255,255,.2)}
+    nav a.active:after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:#fff;border-radius:50%}
+    .auth-buttons{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{padding:10px 24px;border:none;border-radius:50px;font-weight:600;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px;position:relative;overflow:hidden}
+    .btn:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .5s}
+    .btn:hover:before{left:100%}
+    .btn-primary{background:#fff;color:var(--primary);box-shadow:0 4px 15px rgba(0,0,0,.1)}
+    .btn-outline{background:transparent;border:2px solid #fff;color:#fff}
+    .btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+    .btn:active{transform:translateY(-1px)}
+    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    
+    /* ===== HERO ===== */
+    .hero{padding:6rem 0 4rem;text-align:center;position:relative;overflow:hidden}
+    .hero:before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(46,204,113,.1) 0%,transparent 70%);animation:rotate 20s linear infinite}
+    @keyframes rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    .hero h1{font-size:3.8rem;margin-bottom:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;position:relative;z-index:1;animation:fadeInUp .8s ease}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    .hero p{font-size:1.45rem;max-width:850px;margin:0 auto 2.5rem;color:var(--dark);position:relative;z-index:1;animation:fadeInUp .8s ease .2s both}
+    .hero-stats{display:flex;justify-content:center;gap:2rem;margin-top:3rem;flex-wrap:wrap;position:relative;z-index:1}
+    .stat-card{background:#fff;padding:1.8rem 2rem;border-radius:var(--border-radius);box-shadow:var(--card-shadow);min-width:180px;text-align:center;transition:var(--transition);border:2px solid transparent}
+    .stat-card:hover{transform:translateY(-5px);border-color:var(--primary)}
+    .stat-number{font-size:2.8rem;font-weight:800;color:var(--primary);display:block;line-height:1}
+    .stat-label{color:#666;font-weight:500;font-size:.95rem;margin-top:.5rem}
+    
+    /* ===== SECTIONS ===== */
+    .section{padding:6rem 0;position:relative}
+    .section:nth-child(even){background:#fff}
+    .section-title{text-align:center;margin-bottom:4rem}
+    .section-title h2{font-size:2.8rem;color:var(--dark);margin-bottom:1rem;position:relative;display:inline-block}
+    .section-title h2:after{content:'';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);width:80px;height:4px;background:var(--gradient);border-radius:2px}
+    .section-title p{color:#666;max-width:750px;margin:1.5rem auto 0;font-size:1.15rem}
+    
+    /* ===== CARDS GRID ===== */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;margin-top:2rem}
+    .card{background:#fff;border-radius:var(--border-radius);overflow:hidden;box-shadow:var(--card-shadow);transition:var(--transition);border:1px solid rgba(0,0,0,.05);position:relative}
+    .card:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 25px 50px rgba(0,0,0,.15);z-index:10}
+    .card-header{padding:1.8rem;background:var(--gradient);color:#fff;display:flex;align-items:center;gap:12px}
+    .card-header .country-flag{font-size:2rem}
+    .card-header .country-name{font-weight:700;font-size:1.25rem}
+    .card-body{padding:1.8rem}
+    .card-body p{color:#555;margin-bottom:1rem}
+    .card-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+    .card-stat{text-align:center;padding:1rem;background:var(--light);border-radius:12px}
+    .card-stat-value{font-weight:800;color:var(--primary);font-size:1.5rem;display:block}
+    .card-stat-label{color:#666;font-size:.9rem}
+    .best-practice{background:linear-gradient(135deg,#e8f5e9,#d4edda);padding:1.2rem;border-radius:12px;border-left:4px solid var(--primary);margin-top:1rem;font-size:.95rem}
+    .best-practice strong{color:var(--primary-dark)}
+    
+    /* ===== FEATURES ===== */
+    .feature-card{text-align:center;padding:2.5rem 2rem;transition:var(--transition)}
+    .feature-icon{width:90px;height:90px;background:var(--gradient);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.8rem;color:#fff;font-size:2.2rem;box-shadow:0 10px 30px rgba(46,204,113,.3);transition:var(--transition)}
+    .card:hover .feature-icon{transform:scale(1.1) rotate(5deg)}
+    .feature-card h3{margin-bottom:1rem;color:var(--dark);font-size:1.4rem}
+    .feature-card p{color:#666;font-size:1rem}
+    
+    /* ===== CALCULATOR ===== */
+    .calculator{background:#fff;border-radius:var(--border-radius);padding:2.5rem;box-shadow:var(--card-shadow);margin:2.5rem 0;border:1px solid rgba(0,0,0,.05)}
+    .calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.8rem;margin-top:1.8rem}
+    .calc-input label{font-weight:600;color:var(--dark);display:block;margin-bottom:.6rem;font-size:1rem}
+    .calc-input input,.calc-input select{width:100%;padding:14px 16px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;transition:var(--transition);background:#fafafa}
+    .calc-input input:focus,.calc-input select:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(46,204,113,.1)}
+    .calc-result{background:linear-gradient(135deg,#f8f9fa,#e8f5e9);padding:2rem;border-radius:16px;text-align:center;margin-top:2rem;border:2px dashed var(--primary)}
+    .calc-result-label{color:#666;font-size:1.1rem}
+    .calc-result-value{font-size:3.2rem;font-weight:800;color:var(--primary);display:block;margin:.8rem 0;line-height:1;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    .calc-result-currency{color:var(--dark);font-weight:600;font-size:1.2rem}
+    .calc-result-note{margin-top:1rem;color:#666;font-size:.95rem;display:flex;align-items:center;justify-content:center;gap:6px}
+    
+    /* ===== PAYMENTS ===== */
+    .payments{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-top:2.5rem}
+    .payment-badge{background:#fff;padding:14px 28px;border-radius:50px;box-shadow:var(--card-shadow);display:flex;align-items:center;gap:12px;font-weight:600;color:var(--dark);transition:var(--transition);border:2px solid transparent}
+    .payment-badge:hover{transform:translateY(-3px);border-color:var(--primary)}
+    .payment-badge i{font-size:1.6rem}
+    .stripe{color:#635bff}.paypal{color:#003087}.visa{color:#1a1f71}.mastercard{color:#eb001b}
+    
+    /* ===== AI AGENTS ===== */
+    .agent-card{background:#fff;border-radius:var(--border-radius);padding:2rem;box-shadow:var(--card-shadow);text-align:center;transition:var(--transition);border-top:4px solid var(--secondary);position:relative;overflow:hidden}
+    .agent-card:hover{transform:translateY(-8px)}
+    .agent-card:before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity .3s}
+    .agent-card:hover:before{opacity:1}
+    .agent-card.qwen{border-top-color:#6366f1}.agent-card.gpt{border-top-color:#10a37f}.agent-card.claude{border-top-color:#d97757}.agent-card.harvey{border-top-color:#8b5cf6}
+    .agent-icon{width:80px;height:80px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2rem;color:var(--secondary);transition:var(--transition);box-shadow:0 5px 15px rgba(0,0,0,.1)}
+    .agent-card:hover .agent-icon{transform:scale(1.1)}
+    .agent-card.qwen .agent-icon{color:#6366f1;background:linear-gradient(135deg,#eef2ff,#dbeafe)}.agent-card.gpt .agent-icon{color:#10a37f;background:linear-gradient(135deg,#ecfdf5,#d1fae5)}.agent-card.claude .agent-icon{color:#d97757;background:linear-gradient(135deg,#fff7ed,#fed7aa)}.agent-card.harvey .agent-icon{color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#e9d5ff)}
+    .agent-card h4{margin-bottom:.8rem;color:var(--dark);font-size:1.3rem}
+    .agent-card p{color:#666;font-size:1rem;line-height:1.5}
+    .agent-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.85rem;margin-top:1rem;font-weight:500}
+    .status-online{background:linear-gradient(135deg,#d4edda,#c3e6cb);color:#155724}
+    .status-processing{background:linear-gradient(135deg,#fff3cd,#ffeaa7);color:#856404}
+    .status-offline{background:linear-gradient(135deg,#f8d7da,#f5c6cb);color:#721c24}
+    
+    /* ===== SECURITY ===== */
+    .security-item{display:flex;align-items:flex-start;gap:14px;padding:1.5rem;background:#fff;border-radius:16px;box-shadow:var(--card-shadow);margin-bottom:1rem;transition:var(--transition);border-left:4px solid var(--primary)}
+    .security-item:hover{transform:translateX(5px)}
+    .security-icon{width:48px;height:48px;background:var(--gradient);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;flex-shrink:0;box-shadow:0 5px 15px rgba(46,204,113,.3)}
+    .security-item h4{color:var(--dark);margin-bottom:.4rem;font-size:1.15rem}
+    .security-item p{color:#666;font-size:.95rem;line-height:1.5}
+    
+    /* ===== GAMIFICATION ===== */
+    .gamification{background:var(--gradient);border-radius:var(--border-radius);padding:3rem;color:#fff;margin-top:2.5rem;position:relative;overflow:hidden}
+    .gamification:before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);z-index:0;animation:rotate 25s linear infinite}
+    .gamification-content{position:relative;z-index:1}
+    .gamification h3{margin-bottom:1.2rem;font-size:2rem}
+    .gamification p{opacity:.95;max-width:700px;margin:0 auto 2rem;font-size:1.1rem}
+    .levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.2rem;margin-top:1.8rem}
+    .level-badge{background:rgba(255,255,255,.2);padding:1.5rem 1rem;border-radius:16px;text-align:center;backdrop-filter:blur(10px);transition:var(--transition);border:2px solid transparent}
+    .level-badge:hover{background:rgba(255,255,255,.3)}
+    .level-badge.active{background:#fff;color:var(--dark);font-weight:600;transform:scale(1.08);border-color:var(--primary);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    .level-icon{font-size:2.2rem;margin-bottom:.8rem;display:block}
+    .level-name{font-weight:600;margin-bottom:.3rem}
+    .level-range{font-size:.85rem;opacity:.9}
+    
+    /* ===== CTA ===== */
+    .cta{background:var(--gradient);padding:5rem 0;text-align:center;color:#fff;margin:4rem 0;border-radius:var(--border-radius);position:relative;overflow:hidden}
+    .cta:before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 30% 70%,rgba(255,255,255,.1) 0%,transparent 50%)}
+    .cta h2{font-size:2.6rem;margin-bottom:1.8rem;position:relative;z-index:1}
+    .cta p{max-width:750px;margin:0 auto 2.5rem;font-size:1.2rem;opacity:.95;position:relative;z-index:1}
+    .cta-buttons{display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap;position:relative;z-index:1}
+    .btn-cta{padding:16px 36px;font-size:1.15rem;border-radius:50px;font-weight:600}
+    .btn-white{background:#fff;color:var(--primary);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+    .btn-outline-white{background:transparent;border:2px solid #fff;color:#fff}
+    .btn-cta:hover{transform:translateY(-4px);box-shadow:0 12px 35px rgba(0,0,0,.3)}
+    
+    /* ===== FOOTER ===== */
+    footer{background:var(--dark);color:#fff;padding:4rem 0 2rem;margin-top:4rem}
+    .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2.5rem}
+    .footer-col h3{margin-bottom:1.8rem;position:relative;padding-bottom:1rem;font-size:1.3rem}
+    .footer-col h3:after{content:'';position:absolute;bottom:0;left:0;width:45px;height:3px;background:var(--primary);border-radius:2px}
+    .footer-col ul{list-style:none}
+    .footer-col ul li{margin-bottom:1rem}
+    .footer-col a{color:#ccc;text-decoration:none;transition:color .3s ease;display:flex;align-items:center;gap:10px;font-size:1rem}
+    .footer-col a:hover{color:var(--primary);transform:translateX(3px)}
+    .footer-col a i{font-size:.8rem;opacity:.7}
+    .social-links{display:flex;gap:14px;margin-top:1.5rem}
+    .social-links a{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#fff;transition:var(--transition);font-size:1.1rem}
+    .social-links a:hover{background:var(--primary);transform:translateY(-4px) scale(1.1);box-shadow:0 8px 20px rgba(46,204,113,.4)}
+    .copyright{text-align:center;padding-top:2.5rem;margin-top:2.5rem;border-top:1px solid rgba(255,255,255,.1);color:#aaa;font-size:1rem}
+    .copyright a{color:var(--primary);text-decoration:none}
+    
+    /* ===== MODALS ===== */
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
+    .modal.active{display:flex}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal-content{background:#fff;border-radius:var(--border-radius);padding:2.5rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;position:relative;animation:slideUp .4s ease}
+    @keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-close{position:absolute;top:1.2rem;right:1.2rem;background:none;border:none;font-size:2rem;cursor:pointer;color:#666;transition:var(--transition);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .modal-close:hover{background:var(--light);color:var(--danger);transform:rotate(90deg)}
+    
+    /* ===== CAMERA SCAN ===== */
+    #camera-preview{width:100%;max-height:320px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;margin:1.2rem 0;display:none;position:relative;overflow:hidden}
+    #camera-preview.active{display:block}
+    #camera-preview:after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;height:60%;border:3px dashed rgba(46,204,113,.7);border-radius:20px;pointer-events:none;animation:pulse-border 2s infinite}
+    @keyframes pulse-border{0%,100%{border-color:rgba(46,204,113,.7)}50%{border-color:rgba(46,204,113,1)}}
+    #scan-result{margin-top:1.5rem;padding:1.5rem;border-radius:16px;background:linear-gradient(135deg,#e8f5e9,#d4edda);display:none;animation:fadeInUp .4s ease}
+    #scan-result.active{display:block}
+    #scan-result.success{background:linear-gradient(135deg,#d4edda,#c3e6cb);border:2px solid var(--success)}
+    #scan-result.error{background:linear-gradient(135deg,#f8d7da,#f5c6cb);border:2px solid var(--danger)}
+    
+    /* ===== CONFETTI ===== */
+    .confetti{position:fixed;width:10px;height:10px;pointer-events:none;z-index:9999;border-radius:2px;animation:confetti-fall 3s ease-in-out forwards}
+    @keyframes confetti-fall{0%{transform:translateY(-10vh) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(100vh) rotate(720deg) scale(0);opacity:0}}
+    
+    /* ===== MAP ===== */
+    #map{height:350px;width:100%;border-radius:16px;margin:1.5rem 0;box-shadow:var(--card-shadow);border:3px solid #fff}
+    .map-legend{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:.9rem;color:#666}
+    .legend-dot{width:12px;height:12px;border-radius:50%}
+    .legend-dot.pakomak{background:#2ecc71}.legend-dot.store{background:#3498db}.legend-dot.vending{background:#f39c12}.legend-dot.mall{background:#9b59b6}
+    
+    /* ===== PROGRESS BAR ===== */
+    .progress-container{background:var(--light);border-radius:10px;height:8px;overflow:hidden;margin:1rem 0}
+    .progress-bar{height:100%;background:var(--gradient);border-radius:10px;transition:width .5s ease;position:relative}
+    .progress-bar:after{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:#fff;animation:shine 1.5s infinite}
+    @keyframes shine{0%{transform:translateX(-10px)}100%{transform:translateX(200px)}}
+    
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:1024px){.hero h1{font-size:3.2rem}.section-title h2{font-size:2.4rem}}
+    @media(max-width:768px){.hero{padding:4rem 0 3rem}.hero h1{font-size:2.6rem}.hero p{font-size:1.2rem}.section{padding:4.5rem 0}.section-title h2{font-size:2rem}.grid{grid-template-columns:1fr}.header-content{flex-direction:column;text-align:center}nav ul{flex-wrap:wrap;justify-content:center}.auth-buttons{width:100%;justify-content:center}.stat-card{min-width:140px;padding:1.4rem}.stat-number{font-size:2.2rem}.calc-grid{grid-template-columns:1fr}.cta h2{font-size:2.2rem}.cta p{font-size:1.1rem}}
+    @media(max-width:480px){.hero h1{font-size:2.2rem}.btn{padding:10px 20px;font-size:.95rem}.feature-icon{width:75px;height:75px;font-size:1.8rem}.agent-icon{width:70px;height:70px;font-size:1.7rem}}
+    
+    /* ===== ACCESSIBILITY ===== */
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    
+    /* ===== LOADING ===== */
+    .loading{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin 1s linear infinite;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-dark{border-color:rgba(0,0,0,.3);border-top-color:var(--primary)}
+  </style>
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="container header-content">
+      <div class="logo" onclick="scrollToTop()">
+        <i class="fas fa-leaf floating"></i>
+        <span>Makedon Eco World</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#" class="active">Дома</a></li>
+          <li><a href="#global">Глобално</a></li>
+          <li><a href="#features">Карактеристики</a></li>
+          <li><a href="#financial">Финансии</a></li>
+          <li><a href="#ai">AI Агенти</a></li>
+          <li><a href="#security">Безбедност</a></li>
+        </ul>
+      </nav>
+      <div class="auth-buttons">
+        <button class="btn btn-outline" onclick="openModal('loginModal')"><i class="fas fa-user"></i> <span class="hide-mobile">Најави се</span></button>
+        <button class="btn btn-primary" onclick="startScan()"><i class="fas fa-qrcode"></i> <span class="hide-mobile">Скенрај</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="container">
+      <h1>🌍 Makedon Eco World</h1>
+      <p>Првата светска платформа за собирање шишиња со глобална валутизација. Секој оставен предмет = 1 EcoPoint = Глобална вредност. Почиста планета, пополн џеб!</p>
+      <div class="auth-buttons" style="justify-content:center;margin-top:1rem">
+        <button class="btn btn-white btn-cta" onclick="startScan()"><i class="fas fa-play-circle"></i> Започни Сега</button>
+        <button class="btn btn-outline-white btn-cta" onclick="scrollToSection('howItWorks')"><i class="fas fa-info-circle"></i> Како Работи</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card"><span class="stat-number">60+</span><span class="stat-label">Земји</span></div>
+        <div class="stat-card"><span class="stat-number">98%</span><span class="stat-label">Ефикасност</span></div>
+        <div class="stat-card"><span class="stat-number">€0.25</span><span class="stat-label">Просек</span></div>
+        <div class="stat-card"><span class="stat-number" id="userPoints">0</span><span class="stat-label">Твои Поени</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GLOBAL ANALYSIS ===== -->
+  <section class="section" id="global">
+    <div class="container">
+      <div class="section-title">
+        <h2>🌐 Глобална Анализа: Најдобрите Практики</h2>
+        <p>Ги интегриравме срцевините од најдобрите системи ширум светот во нашата платформа.</p>
+      </div>
+      <div class="grid">
+        <!-- Germany -->
+        <div class="card">
+          <div class="card-header"><span class="country-flag">🇩🇪</span><span class="country-name">Германија – Pfand</span></div>
+          <div class="card-body">
+            <p><strong>98%+ стапка на враќање</strong>. Моментална исплата преку автомати во секој супермаркет.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">€0.25</span><span class="card-stat-label">Депозит</span></div>
+              <div class="card-stat"><span class="card-stat-value">98%</span><span class="card-stat-label">Враќање</span></div>
+            </div>
+            <div class="best-practice"><strong>Срцевина за нас:</strong> Интеграција со малопродажба + моментална дигитална исплата преку паричници.</div>
+          </div>
+        </div>
+        <!-- Norway -->
+        <div class="card">
+          <div class="card-header"><span class="country-flag">🇳🇴</span><span class="country-name">Норвешка – Infinitum</span></div>
+          <div class="card-body">
+            <p>Пионер во <strong>гејмификацијата</strong>. Бонуси, нивоа, социјални предизвици за максимална ангажираност.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">92%</span><span class="card-stat-label">Враќање</span></div>
+              <div class="card-stat"><span class="card-stat-value">2-3 NOK</span><span class="card-stat-label">Депозит</span></div>
+            </div>
+            <div class="best-practice"><strong>Срцевина за нас:</strong> Гејмификација + социјални елементи = долгорочна лојалност.</div>
+          </div>
+        </div>
+        <!-- Lithuania -->
+        <div class="card">
+          <div class="card-header"><span class="country-flag">🇱🇹</span><span class="country-name">Литванија – Užstato</span></div>
+          <div class="card-body">
+            <p><strong>Мобилно-прво</strong> искуство. Скенрај, врати, добивај поени веднаш. Едноставно и брзо.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">92%</span><span class="card-stat-label">Враќање</span></div>
+              <div class="card-stat"><span class="card-stat-value">€0.10</span><span class="card-stat-label">Депозит</span></div>
+            </div>
+            <div class="best-practice"><strong>Срцевина за нас:</strong> Едноставен кориснички тек + брза мобилна верификација.</div>
+          </div>
+        </div>
+        <!-- Macedonia -->
+        <div class="card">
+          <div class="card-header"><span class="country-flag">🇲🇰</span><span class="country-name">Македонија – Пакомак</span></div>
+          <div class="card-body">
+            <p>Непрофитна компанија со фокус на <strong>едукација</strong> и "зелени поени" за јавни услуги.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">Пилот</span><span class="card-stat-label">Фаза</span></div>
+              <div class="card-stat"><span class="card-stat-value">1:1</span><span class="card-stat-label">Сисе=Поен</span></div>
+            </div>
+            <div class="best-practice"><strong>Срцевина за нас:</strong> Партнерства со локални бизниси + поени за јавни услуги.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="section" id="features" style="background:#f8f9fa">
+    <div class="container">
+      <div class="section-title">
+        <h2>✨ Карактеристики</h2>
+        <p>Секоја функција е дизајнирана да биде интуитивна, мотивирачка и глобално скалабилна.</p>
+      </div>
+      <div class="grid">
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fas fa-qrcode"></i></div>
+          <h3>QR/Баркод Скенрање</h3>
+          <p>Скенрај го кодот на шишето/лименката. Нашиот AI веднаш го верификува и додава поени.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+          <h3>Мапа на Точки</h3>
+          <p>Најди најблиски контејнери, автомати или партнерски локации со геолокација.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fas fa-coins"></i></div>
+          <h3>Портфолио со Поени</h3>
+          <p>Следи ги твоите EcoPoints, види историја, конвертирај во пари, ваучери или донации.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+          <h3>Гејмификација</h3>
+          <p>Освојувај нивоа, беџови и се натпреварувај со пријатели на глобални лидерборди.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fas fa-hand-holding-heart"></i></div>
+          <h3>Донации за Екологија</h3>
+          <p>Претвори ги поените во донации за шуми, океани или локални еколошки проекти.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fas fa-users"></i></div>
+          <h3>Социјални Предизвици</h3>
+          <p>Создади тим со пријатели, постави заеднички цели и освојувај бонус поени.</p>
+        </div>
+      </div>
+
+      <!-- Calculator -->
+      <div class="calculator">
+        <h3 style="text-align:center;margin-bottom:1rem;color:var(--dark);font-size:1.6rem"><i class="fas fa-calculator"></i> Калкулатор: Колку Можеш Да Заработиш?</h3>
+        <p style="text-align:center;color:#666;margin-bottom:1.5rem">Внеси колку шишиња/лименки собираш неделно и види ја твојата потенцијална заработка.</p>
+        <div class="calc-grid">
+          <div class="calc-input">
+            <label for="bottles">🍶 Шишиња неделно</label>
+            <input type="number" id="bottles" placeholder="на пр. 10" min="0" value="10">
+          </div>
+          <div class="calc-input">
+            <label for="cans">🥫 Лименки неделно</label>
+            <input type="number" id="cans" placeholder="на пр. 15" min="0" value="15">
+          </div>
+          <div class="calc-input">
+            <label for="country">🌍 Земја за конверзија</label>
+            <select id="country">
+              <option value="mk">🇲🇰 Северна Македонија</option>
+              <option value="de">🇩🇪 Германија</option>
+              <option value="no">🇳🇴 Норвешка</option>
+              <option value="us">🇺🇸 САД</option>
+              <option value="global">🌐 Глобално (средно)</option>
+            </select>
+          </div>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result-label">Твојата неделна заработка:</span>
+          <span class="calc-result-value" id="resultValue">€3.75</span>
+          <span class="calc-result-currency">или <span id="resultPoints">25</span> EcoPoints</span>
+          <p class="calc-result-note"><i class="fas fa-info-circle"></i> Вредноста варира според локалниот депозит. Платформата автоматски ја конвертира.</p>
+        </div>
+      </div>
+
+      <!-- Map Preview -->
+      <div style="background:#fff;border-radius:var(--border-radius);padding:2rem;box-shadow:var(--card-shadow);margin-top:2.5rem">
+        <h3 style="color:var(--dark);margin-bottom:1rem;text-align:center;font-size:1.5rem"><i class="fas fa-globe-europe"></i> Глобална Мрежа на Точки</h3>
+        <p style="color:#666;text-align:center;max-width:700px;margin:0 auto 1.5rem">Платформата автоматски ги прикажува најблиските точки за враќање шишиња, без разлика каде си.</p>
+        <div id="map"></div>
+        <div class="map-legend">
+          <div class="legend-item"><span class="legend-dot pakomak"></span> Пакомак</div>
+          <div class="legend-item"><span class="legend-dot store"></span> Супермаркет</div>
+          <div class="legend-item"><span class="legend-dot vending"></span> Автомат</div>
+          <div class="legend-item"><span class="legend-dot mall"></span> Мол</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINANCIAL ===== -->
+  <section class="section" id="financial">
+    <div class="container">
+      <div class="section-title">
+        <h2>💰 Финансиски Модел</h2>
+        <p>Платформата е дизајнирана да биде финансиски одржлива и профитабилна за сите учесници.</p>
+      </div>
+      <div class="grid">
+        <div class="card" style="border-left:4px solid var(--accent)">
+          <div class="card-body">
+            <h4><i class="fas fa-percentage"></i> Провизија од Трансакции</h4>
+            <p>Мала провизија (2-5%) при конверзија на EcoPoints во пари или ваучери. Прозирно и фер.</p>
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--accent)">
+          <div class="card-body">
+            <h4><i class="fas fa-ad"></i> Рекламен Простор</h4>
+            <p>Брендови плаќаат за прикажување на еколошки кампањи. Корисниците добиваат бонус поени.</p>
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--accent)">
+          <div class="card-body">
+            <h4><i class="fas fa-handshake"></i> Партнерски Провизии</h4>
+            <p>Провизија од молови и продавници кога корисникот ги користи своите поени кај нив.</p>
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--accent)">
+          <div class="card-body">
+            <h4><i class="fas fa-database"></i> Анонимизирани Податоци</h4>
+            <p>Агрегирани, анонимизирани податоци за трендови во рециклирањето за истражувачки институции.</p>
+          </div>
+        </div>
+      </div>
+      
+      <h3 style="text-align:center;color:var(--dark);margin:3rem 0 1.5rem;font-size:1.6rem"><i class="fas fa-credit-card"></i> Интеграција со Платежни Системи</h3>
+      <p style="text-align:center;color:#666;max-width:700px;margin:0 auto 1.5rem">Безбедна исплата на заработката преку светски признати платформи. Сите трансакции се енд-ту-енд енкриптирани.</p>
+      <div class="payments">
+        <div class="payment-badge stripe"><i class="fab fa-stripe"></i> Stripe</div>
+        <div class="payment-badge paypal"><i class="fab fa-paypal"></i> PayPal</div>
+        <div class="payment-badge visa"><i class="fab fa-cc-visa"></i> Visa Direct</div>
+        <div class="payment-badge mastercard"><i class="fab fa-cc-mastercard"></i> Mastercard Send</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#e8f5e9,#d4edda);padding:1.8rem;border-radius:16px;margin-top:2.5rem;border-left:4px solid var(--primary)">
+        <strong style="color:var(--primary-dark);display:block;margin-bottom:.8rem;font-size:1.1rem"><i class="fas fa-shield-alt"></i> Финансиска Безбедност на Ниво на Банка</strong>
+        <span style="color:#555;font-size:1rem;line-height:1.6">Сите платежни процеси се <strong>PCI DSS комплајантни</strong>. Никогаш не чуваме директни податоци од картички – користиме токенизација и енд-ту-енд енкрипција (TLS 1.3+). Регуларни безбедносни аудити од трети страни.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AI AGENTS ===== -->
+  <section class="section" id="ai" style="background:#f8f9fa">
+    <div class="container">
+      <div class="section-title">
+        <h2>🤖 Проактивни AI Агенти</h2>
+        <p>Интегриравме најдобрите големи јазични модели кои работат заедно за паметна, безбедна и персонализирана платформа.</p>
+      </div>
+      <div class="grid">
+        <div class="agent-card qwen">
+          <div class="agent-icon"><i class="fas fa-brain"></i></div>
+          <h4>Qwen Agent</h4>
+          <p><strong>Верификација + Локализација:</strong> Компјутерска визија за препознавање на амбалажа, поддршка за македонски/балкански јазици, оптимизација за слаб интернет.</p>
+          <span class="agent-status status-online"><i class="fas fa-circle" style="font-size:.5rem"></i> Online</span>
+        </div>
+        <div class="agent-card gpt">
+          <div class="agent-icon"><i class="fas fa-comments"></i></div>
+          <h4>GPT Agent</h4>
+          <p><strong>Корисничка Поддршка + Гејмификација:</strong> 24/7 чатбот за помош, генерирање на персонализирани предизвици и мотивациони пораки.</p>
+          <span class="agent-status status-online"><i class="fas fa-circle" style="font-size:.5rem"></i> Online</span>
+        </div>
+        <div class="agent-card claude">
+          <div class="agent-icon"><i class="fas fa-balance-scale"></i></div>
+          <h4>Claude Agent</h4>
+          <p><strong>Регулаторна Комплајанса:</strong> Автоматско следење на законите за депозит по држави, генерирање на правни документи и известувања.</p>
+          <span class="agent-status status-processing"><i class="fas fa-circle" style="font-size:.5rem"></i> Syncing</span>
+        </div>
+        <div class="agent-card harvey">
+          <div class="agent-icon"><i class="fas fa-gavel"></i></div>
+          <h4>Harvey Agent</h4>
+          <p><strong>Глобални Плаќања + Даноци:</strong> Правна рамка за меѓународни трансакции, автоматска пресметка на даночни обврски по јурисдикција.</p>
+          <span class="agent-status status-online"><i class="fas fa-circle" style="font-size:.5rem"></i> Online</span>
+        </div>
+      </div>
+      
+      <div style="background:#fff;border-radius:var(--border-radius);padding:2.5rem;box-shadow:var(--card-shadow);margin-top:3rem">
+        <h3 style="color:var(--dark);margin-bottom:1.5rem;text-align:center;font-size:1.5rem"><i class="fas fa-sync-alt"></i> Работен Тек: Од Скенрање до Исплата</h3>
+        <ol style="color:#555;line-height:2.2;padding-left:1.8rem;max-width:850px;margin:0 auto;font-size:1.05rem">
+          <li><strong>📸 Скенрање:</strong> Корисникот скенира шише → <em>Qwen</em> го верификува преку компјутерска визија + геолокација.</li>
+          <li><strong>⭐ Поени:</strong> Системот додава 1 EcoPoint → <em>GPT</em> испраќа персонализирана честитка на македонски.</li>
+          <li><strong>💰 Конверзија:</strong> Корисникот бара исплата → <em>Harvey</em> ги проверува локалните регулативи, <em>Stripe/PayPal</em> ја обработува трансакцијата.</li>
+          <li><strong>⚖️ Комплајанса:</strong> <em>Claude</em> автоматски генерира извештаи за владини тела и партнери.</li>
+          <li><strong>📈 Оптимизација:</strong> Сите агенти учат од податоците и подобруваат прецизност, безбедност и корисничко искуство.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECURITY ===== -->
+  <section class="section" id="security">
+    <div class="container">
+      <div class="section-title">
+        <h2>🔐 Безбедносна Заштита</h2>
+        <p>Безбедноста е темелот. Нашата платформа ги надминува глобалните стандарди за заштита на податоци и финансиски трансакции.</p>
+      </div>
+      <div class="grid">
+        <div class="security-item">
+          <div class="security-icon"><i class="fas fa-lock"></i></div>
+          <div><h4>Енд-ту-Енд Енкрипција</h4><p>Сите податоци се енкриптирани со TLS 1.3+ и AES-256. Нема "чист текст" никогаш.</p></div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon"><i class="fas fa-user-shield"></i></div>
+          <div><h4>2FA Автентикација</h4><p>Задолжителна дво-факторска автентикација за сите корисници. Поддршка за SMS, email и апликации.</p></div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon"><i class="fas fa-credit-card"></i></div>
+          <div><h4>PCI DSS Комплајанса</h4><p>Платежните процеси се сертифицирани според највисоките индустриски стандарди за безбедност на картички.</p></div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon"><i class="fas fa-user-secret"></i></div>
+          <div><h4>Токенизација</h4><p>Чувствителните податоци (картички, лични информации) се заменуваат со безбедни токени. Оригиналот никогаш не се чува.</p></div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
+          <div><h4>Регуларни Аудити</h4><p>Независни безбедносни тестови (penetration testing) и SOC 2 аудити на секои 6 месеци.</p></div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon"><i class="fas fa-globe-europe"></i></div>
+          <div><h4>ГДПР/ПДП Комплајанса</h4><p>Полна усогласеност со европските и македонските закони за заштита на лични податоци. Минимално собирање податоци.</p></div>
+        </div>
+      </div>
+
+      <!-- Gamification Preview -->
+      <div class="gamification">
+        <div class="gamification-content">
+          <h3 style="margin-bottom:1rem;font-size:1.9rem"><i class="fas fa-gamepad"></i> Гејмификација: Направи го Рециклирањето Забавно!</h3>
+          <p style="opacity:.95;max-width:700px;margin:0 auto 1.8rem">Освојувај нивоа, собирај беџови и се натпреварувај со пријатели. Секој напредок те носи поблиску до реални награди.</p>
+          <div class="levels">
+            <div class="level-badge"><span class="level-icon">🌱</span><div class="level-name">Еко-Новач</div><div class="level-range">0-50 поени</div></div>
+            <div class="level-badge"><span class="level-icon">🌿</span><div class="level-name">Зелен Херој</div><div class="level-range">51-200 поени</div></div>
+            <div class="level-badge active"><span class="level-icon">🌳</span><div class="level-name">Планетарен Чувач</div><div class="level-range">201-500 поени</div></div>
+            <div class="level-badge"><span class="level-icon">🌍</span><div class="level-name">Глобален Лидер</div><div class="level-range">500+ поени</div></div>
+          </div>
+          <div style="margin-top:2rem;text-align:center">
+            <span style="background:rgba(255,255,255,.25);padding:10px 24px;border-radius:50px;font-weight:600;display:inline-flex;align-items:center;gap:8px"><i class="fas fa-gift"></i> Награди: Поп-пусти • Бесплатни производи • Донации за екологија</span>
+          </div>
+          <div style="margin-top:1.5rem">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:.5rem"><span style="font-size:.95rem">Напредок кон следно ниво:</span><span id="levelProgress" style="font-weight:600">38%</span></div>
+            <div class="progress-container"><div class="progress-bar" id="progressBar" style="width:38%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="container">
+    <div class="cta">
+      <h2>🚀 Готови Да Ја Создадеме Имперријата?</h2>
+      <p>Оваа платформа е твојот билет за глобално влијание. Секој собрани предмет е чекор кон почиста планета и финансиска слобода. Ајде да го направиме ова реалност, Санде!</p>
+      <div class="cta-buttons">
+        <button class="btn btn-white btn-cta" onclick="startScan()"><i class="fas fa-rocket"></i> Започни Развој Сега</button>
+        <button class="btn btn-outline-white btn-cta" onclick="downloadSpecs()"><i class="fas fa-file-contract"></i> Преземи Спецификации</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="logo" style="margin-bottom:1.5rem;color:#fff;font-size:1.6rem;cursor:pointer" onclick="scrollToTop()">
+            <i class="fas fa-leaf"></i><span>Makedon Eco World</span>
+          </div>
+          <p style="color:#ccc;line-height:1.7;margin-bottom:1.5rem;font-size:1rem">Првата светска платформа за собирање шишиња со глобална валутизација на поени. Секој предмет има вредност. Секој корисник е херој.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          </div>
+          <p style="color:#aaa;font-size:.95rem;margin-top:1.2rem">📧 <a href="mailto:makedonecoworld@outlook.com" style="color:var(--primary)">makedonecoworld@outlook.com</a></p>
+        </div>
+        <div class="footer-col">
+          <h3>Платформа</h3>
+          <ul>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Како Функционира</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Мапа на Точки</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Партнерски Програми</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> API Документација</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Статус на Системот</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Финансии</h3>
+          <ul>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Конверзија на Поени</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Методи на Исплата</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Даночни Информации</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Провизии и Цени</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Финансиска Безбедност</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Поддршка</h3>
+          <ul>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Често Поставувани Прашања</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Контакт Формулар</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Центар за Помош</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Пријави Проблем</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Блог и Новости</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2026 Makedon Eco World. Сите права задржани. | Дизајнирано со ❤️ за почиста планета | <a href="#">Политика за Приватност</a> | <a href="#">Услови за Користење</a></p>
+        <p style="margin-top:.5rem;font-size:.95rem;opacity:.85">Платформата е во развој. Партнерство со Пакомак МК и глобални еколошки организации.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCAN MODAL ===== -->
+  <div class="modal" id="scanModal" role="dialog" aria-labelledby="scanTitle">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('scanModal')" aria-label="Затвори">&times;</button>
+      <h3 id="scanTitle" style="color:var(--dark);margin-bottom:1rem;font-size:1.5rem"><i class="fas fa-qrcode"></i> Скенрај Предмет</h3>
+      <p style="color:#666;margin-bottom:1.2rem;font-size:1rem">Насочи ја камерата кон баркодот или логото на шишето/лименката. Осигурај се дека е добро осветлено.</p>
+      <video id="camera-preview" autoplay playsinline muted></video>
+      <button class="btn btn-primary" id="captureBtn" style="width:100%;justify-content:center;padding:14px;font-size:1.05rem" onclick="captureAndVerify()"><i class="fas fa-camera"></i> Снимка и Верификација</button>
+      <div id="scan-result">
+        <p id="scan-message" style="font-weight:600;margin-bottom:.5rem;font-size:1.1rem"></p>
+        <p id="scan-points" style="color:var(--primary);font-size:1.3rem;font-weight:700"></p>
+        <div id="scan-next-actions" style="margin-top:1rem;display:flex;gap:10px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOGIN MODAL ===== -->
+  <div class="modal" id="loginModal" role="dialog" aria-labelledby="loginTitle">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Затвори">&times;</button>
+      <h3 id="loginTitle" style="color:var(--dark);margin-bottom:1.5rem;font-size:1.5rem"><i class="fas fa-user"></i> Најави се или Регистрирај се</h3>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div style="margin-bottom:1.2rem">
+          <label for="email" style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--dark)">Е-пошта</label>
+          <input type="email" id="email" required placeholder="tvoj@email.com" style="width:100%;padding:14px;border:2px solid #ddd;border-radius:12px;font-size:1rem">
+        </div>
+        <div style="margin-bottom:1.5rem">
+          <label for="password" style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--dark)">Лозинка</label>
+          <input type="password" id="password" required placeholder="••••••••" style="width:100%;padding:14px;border:2px solid #ddd;border-radius:12px;font-size:1rem">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:1.05rem"><i class="fas fa-sign-in-alt"></i> Најави се</button>
+        <p style="text-align:center;margin-top:1.2rem;color:#666;font-size:1rem">Немаш сметка? <a href="#" style="color:var(--primary);text-decoration:none;font-weight:500">Регистрирај се бесплатно</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== NOTIFICATION TOAST ===== -->
+  <div id="toast" style="position:fixed;bottom:20px;right:20px;background:#fff;color:var(--dark);padding:16px 24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);display:none;z-index:3000;max-width:350px;animation:slideIn .3s ease;border-left:4px solid var(--primary)">
+    <div style="display:flex;align-items:start;gap:12px">
+      <i class="fas fa-check-circle" style="color:var(--success);font-size:1.3rem;margin-top:2px"></i>
+      <div>
+        <strong id="toast-title" style="display:block;margin-bottom:4px">Успешно!</strong>
+        <span id="toast-message" style="color:#666;font-size:.95rem">Вашата акција е завршена.</span>
+      </div>
+    </div>
+  </div>
+  <style>@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}</style>
+
+  <!-- ===== CORE JAVASCRIPT ===== -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // ==================== CONFIG ====================
+    const CONFIG = {
+      appName: 'Makedon Eco World',
+      contactEmail: 'makedonecoworld@outlook.com',
+      apiBaseUrl: '/api/v1',
+      pointsPerItem: 1,
+      baseValueEur: 0.018,
+      platformFeePercent: 0.03,
+      minPayout: { MK: 100, DE: 5, NO: 50, US: 3, global: 5 },
+      exchangeRates: { MKD: 61.5, EUR: 1, USD: 1.08, NOK: 11.2 },
+      supportedLanguages: ['mk', 'en', 'sq', 'sr', 'bg'],
+      levels: [
+        { name: 'Еко-Новач', threshold: 0, icon: '🌱' },
+        { name: 'Зелен Херој', threshold: 50, icon: '🌿' },
+        { name: 'Планетарен Чувач', threshold: 200, icon: '🌳' },
+        { name: 'Глобален Лидер', threshold: 500, icon: '🌍' }
+      ]
+    };
+
+    // ==================== STATE ====================
+    const state = {
+      currentUser: null,
+      ecoPoints: 0,
+      scannedItems: [],
+      agents: { qwen: null, gpt: null, claude: null, harvey: null },
+      cameraStream: null,
+      map: null
+    };
+
+    // ==================== AGENT MOCKS ====================
+    class QwenAgent {
+      constructor(config) { this.config = config; }
+      async verifyItem(imageData, metadata) {
+        await new Promise(r => setTimeout(r, 1200 + Math.random()*800));
+        const valid = Math.random() > 0.08;
+        const types = ['plastic','glass','aluminum'];
+        const values = { plastic: 6, glass: 10, aluminum: 8 };
+        const type = types[Math.floor(Math.random()*3)];
+        return {
+          is_valid: valid,
+          item_type: valid ? type : 'invalid',
+          barcode_detected: valid ? `BAR${Math.floor(Math.random()*1e6)}` : null,
+          confidence_score: valid ? (0.87 + Math.random()*0.12).toFixed(2) : 0,
+          deposit_value_mkd: valid ? values[type] : 0,
+          eco_points_earned: valid ? CONFIG.pointsPerItem : 0,
+          message_mk: valid ? `✅ Одлично! Добивте 1 EcoPoint за ова ${type === 'plastic' ? 'пластично шише' : type === 'glass' ? 'стаклено шише' : 'лименка'}.` : '❌ Овој предмет не е прифатлив. Обидете се со друг.',
+          next_suggestion: valid ? ['scan_more', 'view_points', 'invite_friend'][Math.floor(Math.random()*3)] : 'try_again'
+        };
+      }
+    }
+
+    class GPTAgent {
+      constructor(config) { this.config = config; this.userContext = config.userContext || {}; }
+      async generateResponse(userMessage, history) {
+        await new Promise(r => setTimeout(r, 600 + Math.random()*400));
+        const points = this.userContext.total_points || 0;
+        const level = CONFIG.levels.slice().reverse().find(l => points >= l.threshold) || CONFIG.levels[0];
+        const nextLevel = CONFIG.levels.find(l => l.threshold > points);
+        const progress = nextLevel ? Math.min(100, Math.round((points - level.threshold) / (nextLevel.threshold - level.threshold) * 100)) : 100;
+        const messages = [
+          `Здраво ${this.userContext.name || 'Пријателе'}! 🌱`,
+          `Твоето ниво: ${level.icon} ${level.name}`,
+          `Имаш ${points} EcoPoints`,
+          nextLevel ? `Уште ${nextLevel.threshold - points} поени до ${nextLevel.name}!` : 'Честитки, го достигна највисокото ниво! 🎉',
+          '',
+          'Што сакаш да направиш денес?',
+          '• 📸 Скенрај ново шише',
+          '• 💰 Конвертирај поени во пари',
+          '• 🎁 Види ги наградите',
+          '• 👥 Покани пријател'
+        ].join('\n');
+        return {
+          message: messages,
+          suggested_action: { type: 'scan', label: 'Скенрај ново шише →', deep_link: 'ecopoints://scan' },
+          gamification_trigger: {
+            show_confetti: points > 0 && points % 50 === 0,
+            badge_unlocked: points === 50 ? '🏆 Прв Херој' : points === 200 ? '🌟 Планетарен Шампион' : null,
+            level_progress: { current: level.name, next: nextLevel?.name || 'MAX', percent: progress }
+          }
+        };
+      }
+    }
+
+    class ClaudeAgent {
+      constructor(config) { this.regulations = this._loadRegulations(); }
+      _loadRegulations() {
+        return {
+          MK: { deposit_active: false, min_age: 16, data_retention_days: 730, tax_rate: 0, currency: 'MKD' },
+          DE: { deposit_active: true, min_age: 18, data_retention_days: 2555, tax_rate: 0.19, currency: 'EUR' },
+          NO: { deposit_active: true, min_age: 13, data_retention_days: 1825, tax_rate: 0.22, currency: 'NOK' },
+          US: { deposit_active: false, min_age: 18, data_retention_days: 1825, tax_rate: 0.15, currency: 'USD' }
+        };
+      }
+      async checkCompliance(countryCode) {
+        await new Promise(r => setTimeout(r, 500));
+        const reg = this.regulations[countryCode] || this.regulations.MK;
+        return {
+          compliant: true,
+          recommendations: reg.deposit_active ? [] : ['Размисли за партнерство со локални рециклери наместо депозит модел'],
+          min_age: reg.min_age,
+          tax_rate: reg.tax_rate,
+          currency: reg.currency,
+          legal_note: `Усогласено со регулативите во ${countryCode}`
+        };
+      }
+    }
+
+    class HarveyAgent {
+      constructor(config) { this.stripeKey = config.stripeKey; this.taxDB = config.taxDB || {}; }
+      async calculatePayout(userId, ecoPoints, targetCurrency) {
+        await new Promise(r => setTimeout(r, 1000));
+        const grossEur = ecoPoints * CONFIG.baseValueEur;
+        const fee = grossEur * CONFIG.platformFeePercent;
+        const userCountry = 'MK';
+        const taxRate = this.taxDB[userCountry]?.payout_tax_rate || 0;
+        const tax = (grossEur - fee) * taxRate;
+        const netEur = grossEur - fee - tax;
+        const rate = CONFIG.exchangeRates[targetCurrency] || 1;
+        const netAmount = netEur * rate;
+        const minPayout = CONFIG.minPayout[userCountry] || CONFIG.minPayout.global;
+        if (netAmount < minPayout) {
+          return { 
+            status: 'PENDING_THRESHOLD', 
+            message_mk: `💰 Потребни се уште ${(minPayout - netAmount).toFixed(2)} ${targetCurrency} за исплата`, 
+            current_net: netAmount.toFixed(2), 
+            threshold: minPayout,
+            points_needed: Math.ceil((minPayout - netAmount) / (CONFIG.baseValueEur * rate))
+          };
+        }
+        return {
+          status: 'READY_FOR_PAYOUT',
+          breakdown: { gross: (grossEur * rate).toFixed(2), fee: (fee * rate).toFixed(2), tax: (tax * rate).toFixed(2), net: netAmount.toFixed(2), currency: targetCurrency },
+          payout_intent_id: `pi_${Date.now()}_${Math.random().toString(36).substr(2,9)}`,
+          estimated_arrival: '1-3 работни дена',
+          compliance_note: 'Трансакцијата е комплајантна со регулативите во ' + userCountry
+        };
+      }
+    }
+
+    // ==================== CORE FUNCTIONS ====================
+    function initAgents() {
+      state.agents.qwen = new QwenAgent({ apiKey: 'mock-key', region: 'balkans' });
+      state.agents.gpt = new GPTAgent({ apiKey: 'mock-key', userContext: { name: 'Санде', total_points: state.ecoPoints, country: 'MK', language: 'mk' } });
+      state.agents.claude = new ClaudeAgent({ apiKey: 'mock-key' });
+      state.agents.harvey = new HarveyAgent({ stripeKey: 'mock-stripe-key', taxDB: { MK: { payout_tax_rate: 0 } } });
+      console.log('🤖 AI Agents initialized for', CONFIG.appName);
+    }
+
+    function initMap() {
+      if (state.map) return;
+      state.map = L.map('map').setView([41.9973, 21.4280], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors | Makedon Eco World'
+      }).addTo(state.map);
+      const markers = [
+        { coords: [41.9973, 21.4280], title: 'Пакомак Центар', type: 'pakomak' },
+        { coords: [42.0050, 21.4350], title: 'Веро Супермаркет', type: 'store' },
+        { coords: [41.9920, 21.4200], title: 'Автомат за Шишиња', type: 'vending' },
+        { coords: [42.0100, 21.4400], title: 'Скопје Сити Мол', type: 'mall' }
+      ];
+      const icons = {
+        pakomak: L.divIcon({ className: 'custom-marker', html: '<div style="background:#2ecc71;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)"></div>' }),
+        store: L.divIcon({ className: 'custom-marker', html: '<div style="background:#3498db;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)"></div>' }),
+        vending: L.divIcon({ className: 'custom-marker', html: '<div style="background:#f39c12;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)"></div>' }),
+        mall: L.divIcon({ className: 'custom-marker', html: '<div style="background:#9b59b6;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)"></div>' })
+      };
+      markers.forEach(m => {
+        L.marker(m.coords, { icon: icons[m.type] }).addTo(state.map)
+          .bindPopup(`<strong>${m.title}</strong><br><small>Отворено 08:00-22:00</small>`);
+      });
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          L.marker([pos.coords.latitude, pos.coords.longitude], {
+            icon: L.divIcon({ className: 'user-marker', html: '<div style="background:#e74c3c;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>' })
+          }).addTo(state.map).bindPopup('📍 Ти си тука').openPopup();
+          state.map.setView([pos.coords.latitude, pos.coords.longitude], 14);
+        }, () => {}, { enableHighAccuracy: true, timeout: 5000 });
+      }
+    }
+
+    async function startScan() {
+      openModal('scanModal');
+      document.getElementById('scan-result').classList.remove('active', 'success', 'error');
+      document.getElementById('captureBtn').disabled = false;
+      document.getElementById('captureBtn').innerHTML = '<i class="fas fa-camera"></i> Снимка и Верификација';
+      if (navigator.mediaDevices?.getUserMedia) {
+        try {
+          state.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+          const video = document.getElementById('camera-preview');
+          video.srcObject = state.cameraStream;
+          video.classList.add('active');
+          video.play().catch(() => {});
+        } catch (err) {
+          console.warn('Camera access denied:', err);
+          document.getElementById('scan-message').textContent = '📷 Камерата не е достапна. Можеш да пратиш слика од галеријата.';
+          document.getElementById('scan-result').classList.add('active');
+        }
+      } else {
+        document.getElementById('scan-message').textContent = '⚠️ Твојот браузер не поддржува камера. Користи мобилен уред.';
+        document.getElementById('scan-result').classList.add('active');
+      }
+    }
+
+    async function captureAndVerify() {
+      const video = document.getElementById('camera-preview');
+      if (!video.srcObject) { showToast('Грешка', 'Камерата не е активирана. Обиди се повторно.', 'error'); return; }
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 1280; canvas.height = video.videoHeight || 720;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL('image/jpeg', 0.85);
+      document.getElementById('captureBtn').disabled = true;
+      document.getElementById('captureBtn').innerHTML = '<span class="loading loading-dark"></span> Верификација во тек...';
+      try {
+        const verification = await state.agents.qwen.verifyItem(imageData, { timestamp: new Date().toISOString(), location: navigator.geolocation ? 'detected' : 'unknown' });
+        const resultEl = document.getElementById('scan-result'), msgEl = document.getElementById('scan-message'), ptsEl = document.getElementById('scan-points');
+        msgEl.textContent = verification.message_mk;
+        ptsEl.textContent = verification.is_valid ? `+${verification.eco_points_earned} EcoPoint` : '';
+        resultEl.className = `active ${verification.is_valid ? 'success' : 'error'}`;
+        if (verification.is_valid) {
+          state.ecoPoints += verification.eco_points_earned;
+          document.getElementById('userPoints').textContent = state.ecoPoints;
+          document.getElementById('resultPoints').textContent = state.ecoPoints;
+          updateLevelProgress();
+          const celebration = await state.agents.gpt.generateResponse(`Скенирав успешно!`, []);
+          if (celebration.gamification_trigger.show_confetti) triggerConfetti();
+          if (celebration.gamification_trigger.badge_unlocked) showToast('🏆 Нов Беџ!', `Освоивте: ${celebration.gamification_trigger.badge_unlocked}`, 'success');
+          document.getElementById('scan-next-actions').innerHTML = `<button class="btn btn-primary" onclick="startScan()" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-redo"></i> Скенрај уште</button><button class="btn btn-outline" onclick="closeModal('scanModal');scrollToSection('financial')" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-coins"></i> Види Поени</button>`;
+          showToast('Успешно!', verification.message_mk, 'success');
+        } else {
+          document.getElementById('scan-next-actions').innerHTML = `<button class="btn btn-primary" onclick="startScan()" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-redo"></i> Обиди се повторно</button>`;
+        }
+      } catch (error) {
+        console.error('Scan error:', error);
+        document.getElementById('scan-message').textContent = '❌ Се појави грешка при верификација. Обидете се повторно.';
+        document.getElementById('scan-result').classList.add('active', 'error');
+        showToast('Грешка', 'Проблем со верификацијата. Провери ја интернет врската.', 'error');
+      } finally {
+        document.getElementById('captureBtn').disabled = false;
+        document.getElementById('captureBtn').innerHTML = '<i class="fas fa-camera"></i> Снимка и Верификација';
+      }
+    }
+
+    function triggerConfetti() {
+      const colors = ['#2ecc71', '#3498db', '#f39c12', '#e74c3c', '#9b59b6', '#1abc9c', '#34495e'];
+      const container = document.body;
+      for (let i = 0; i < 80; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti';
+        conf.style.left = Math.random() * 100 + 'vw';
+        conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+        conf.style.animationDelay = Math.random() * 0.5 + 's';
+        conf.style.width = (6 + Math.random() * 8) + 'px';
+        conf.style.height = conf.style.width;
+        if (Math.random() > 0.6) conf.style.borderRadius = '50%';
+        if (Math.random() > 0.8) conf.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+        container.appendChild(conf);
+        setTimeout(() => conf.remove(), 5000);
+      }
+    }
+
+    function updateLevelProgress() {
+      const points = state.ecoPoints;
+      const currentLevel = CONFIG.levels.slice().reverse().find(l => points >= l.threshold) || CONFIG.levels[0];
+      const nextLevel = CONFIG.levels.find(l => l.threshold > points);
+      const progress = nextLevel ? Math.min(100, Math.round((points - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold) * 100)) : 100;
+      document.getElementById('levelProgress').textContent = progress + '%';
+      document.getElementById('progressBar').style.width = progress + '%';
+      document.querySelectorAll('.level-badge').forEach(b => b.classList.remove('active'));
+      const activeBadge = Array.from(document.querySelectorAll('.level-badge')).find(b => b.querySelector('.level-name').textContent === currentLevel.name);
+      if (activeBadge) activeBadge.classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      if (state.cameraStream) { state.cameraStream.getTracks().forEach(track => track.stop()); state.cameraStream = null; }
+    }
+    function openModal(modalId) { document.getElementById(modalId).classList.add('active'); if (modalId === 'scanModal') initMap(); }
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      state.currentUser = { id: 'user_' + Date.now(), name: email.split('@')[0], email: email, country: 'MK', language: 'mk' };
+      closeModal('loginModal');
+      showToast('Добредојде!', `Здраво, ${state.currentUser.name}! 🌱 Почни со собирање.`, 'success');
+      updateLevelProgress();
+    }
+    function showToast(title, message, type = 'success') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-message').textContent = message;
+      toast.style.borderLeftColor = type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--accent)';
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+    function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function downloadSpecs() {
+      const specs = `# Makedon Eco World – Технички Спецификации
+## Контакти: ${CONFIG.contactEmail}
+## API Base: ${CONFIG.apiBaseUrl}
+## AI Агенти: Qwen (верификација), GPT (конверзација), Claude (комплајанса), Harvey (финансии)
+## Финансиски: 1 сисе = 1 EcoPoint = €${CONFIG.baseValueEur} | Провизија: ${(CONFIG.platformFeePercent*100).toFixed(0)}%
+## Безбедност: TLS 1.3+, PCI DSS, 2FA, токенизација
+## Нивоа: ${CONFIG.levels.map(l => `${l.icon} ${l.name}: ${l.threshold}+ поени`).join(' | ')}
+*Генерирано: ${new Date().toISOString()} | Верзија: 1.0.0*`;
+      const blob = new Blob([specs], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'MakedonEcoWorld_Specs.md'; a.click();
+      URL.revokeObjectURL(url);
+      showToast('Преземено!', 'Спецификациите се преземени. 📄', 'success');
+    }
+    function calculateEarnings() {
+      const bottles = parseInt(document.getElementById('bottles')?.value) || 0;
+      const cans = parseInt(document.getElementById('cans')?.value) || 0;
+      const total = bottles + cans;
+      const country = document.getElementById('country')?.value || 'global';
+      const rates = { mk: 0.15, de: 0.25, no: 0.23, us: 0.10, global: 0.18 };
+      const euroValue = (total * (rates[country] || rates.global)).toFixed(2);
+      const resultEl = document.getElementById('resultValue'), pointsEl = document.getElementById('resultPoints');
+      if (resultEl && pointsEl) { resultEl.textContent = `€${euroValue}`; pointsEl.textContent = total; resultEl.classList.add('result-pulse'); setTimeout(() => resultEl.classList.remove('result-pulse'), 2000); }
+    }
+
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      initAgents(); updateLevelProgress();
+      ['bottles', 'cans', 'country'].forEach(id => { const el = document.getElementById(id); if (el) { el.addEventListener('input', calculateEarnings); el.addEventListener('change', calculateEarnings); }});
+      calculateEarnings();
+      document.querySelectorAll('nav a[href^="#"]').forEach(a => { a.addEventListener('click', e => { e.preventDefault(); document.querySelectorAll('nav a').forEach(l => l.classList.remove('active')); a.classList.add('active'); const target = document.querySelector(a.getAttribute('href')); if (target) { target.scrollIntoView({ behavior: 'smooth' }); if (a.getAttribute('href') === '#features') initMap(); }}); });
+      document.querySelectorAll('.modal').forEach(modal => { modal.addEventListener('click', e => { if (e.target === modal) closeModal(modal.id); }); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal.active').forEach(m => closeModal(m.id)); });
+      console.log('🌱', CONFIG.appName, 'initialized | 📧', CONFIG.contactEmail);
+    });
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { console.log('🔧 Service Worker ready'); }); }
+    window.addEventListener('resize', () => { const hideMobile = document.querySelectorAll('.hide-mobile'); if (window.innerWidth < 480) hideMobile.forEach(el => el.style.display = 'none'); else hideMobile.forEach(el => el.style.display = ''); });
+    window.dispatchEvent(new Event('resize'));
+  </script>
+</body>
+</html>

@@ -247,3 +247,12 @@ if (typeof document !== 'undefined') {
     }
   });
 }
+
+// ===== ГЛОБАЛЕН ЕКСПОРТ ЗА GitHub Pages (без модули) =====
+// Ова овозможува eco-translate.js да работи со обичен <script> таг
+// Без type="module", export не се прикачува на window автоматски
+if (typeof window !== 'undefined') {
+  window.EcoTranslate = EcoTranslate;           // Класата за креирање нови инстанци
+  window.ecoTranslateInstance = ecoTranslate;   // Веќе креирана инстанца
+  console.log('🌐 EcoTranslate глобално експортиран за GitHub Pages');
+}

@@ -221,22 +221,29 @@ export class EcoTranslate {
   }
 }
 
+// ===== ГЛОБАЛЕН ИНСТАНЦА =====
 export const ecoTranslate = new EcoTranslate();
 export default EcoTranslate;
 
+// ===== АВТО-ИНИЦИЈАЛИЗАЦИЈА =====
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', async () => {
     const elements = document.querySelectorAll('[data-translate-key]');
     if (elements.length > 0) await ecoTranslate.translateUI(Array.from(elements));
+    
+    // Ако има селектор за јазик, пополни го
     const langSelector = document.getElementById('language-selector');
     if (langSelector) {
       for (const [code, name] of Object.entries(ecoTranslate.config.languages)) {
         const option = document.createElement('option');
-        option.value = code; option.textContent = name;
+        option.value = code;
+        option.textContent = name;
         if (code === ecoTranslate.currentLang) option.selected = true;
         langSelector.appendChild(option);
       }
-      langSelector.addEventListener('change', async (e) => { await ecoTranslate.setLanguage(e.target.value); });
+      langSelector.addEventListener('change', async (e) => {
+        await ecoTranslate.setLanguage(e.target.value);
+      });
     }
   });
 }

@@ -465,7 +465,175 @@
       </div>
     </div>
   </section>
+<!-- ===== GLOBAL MALLS SECTION ===== -->
+<section class="section" id="global-malls">
+  <div class="container">
+    <div class="section-title">
+      <h2>🏢 Глобални Трговски Центри & Молови</h2>
+      <p>Стратешки партнери за глобална експанзија на Makedon Eco World</p>
+    </div>
 
+    <div class="mall-controls">
+      <div class="mall-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="mallSearch" placeholder="Пребарај мол, земја или регион...">
+      </div>
+      <div class="mall-tabs" id="mallTabs">
+        <button class="mall-tab active" data-region="all">🌐 Сите</button>
+        <button class="mall-tab" data-region="asia">🌏 Азија</button>
+        <button class="mall-tab" data-region="africa">🌍 Африка</button>
+        <button class="mall-tab" data-region="namerica">🌎 Северна Америка</button>
+        <button class="mall-tab" data-region="samerica">🌎 Јужна Америка</button>
+        <button class="mall-tab" data-region="oceania">🌏 Океанија</button>
+        <button class="mall-tab" data-region="oceans">🌊 Океани</button>
+      </div>
+    </div>
+
+    <div class="mall-grid" id="mallGrid"></div>
+  </div>
+</section>
+
+<style>
+  .mall-controls{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem;align-items:center}
+  .mall-search{position:relative;width:100%;max-width:500px}
+  .mall-search i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#666}
+  .mall-search input{width:100%;padding:14px 16px 14px 44px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;background:#fff;transition:var(--transition)}
+  .mall-search input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(46,204,113,.1)}
+  .mall-tabs{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+  .mall-tab{padding:10px 18px;border:none;border-radius:50px;background:var(--light);color:var(--dark);font-weight:500;cursor:pointer;transition:var(--transition);font-size:.95rem}
+  .mall-tab:hover{background:#d4edda}
+  .mall-tab.active{background:var(--gradient);color:#fff;box-shadow:0 4px 12px rgba(46,204,113,.3)}
+  .mall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+  .mall-card{background:#fff;border-radius:var(--border-radius);padding:1.5rem;box-shadow:var(--card-shadow);border:1px solid rgba(0,0,0,.04);transition:var(--transition);display:flex;flex-direction:column;gap:.8rem}
+  .mall-card:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(0,0,0,.1)}
+  .mall-header{display:flex;justify-content:space-between;align-items:start;gap:10px}
+  .mall-name{font-weight:700;font-size:1.15rem;color:var(--dark);line-height:1.3}
+  .mall-priority{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;white-space:nowrap}
+  .priority-critical{background:#ffebee;color:#c62828;border:1px solid #ef9a9a}
+  .priority-high{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+  .priority-medium{background:#fff3e0;color:#f57c00;border:1px solid #ffe0b2}
+  .priority-low{background:#f5f5f5;color:#616161;border:1px solid #e0e0e0}
+  .mall-meta{display:flex;flex-wrap:wrap;gap:.8rem;font-size:.9rem;color:#555}
+  .mall-meta span{display:flex;align-items:center;gap:6px}
+  .mall-meta i{color:var(--primary);width:16px;text-align:center}
+  .mall-region{font-size:.8rem;color:#888;font-weight:500;margin-top:auto}
+  .mall-note{font-size:.85rem;color:#666;background:#f8f9fa;padding:.6rem .8rem;border-radius:8px;margin-top:.2rem}
+  @media(max-width:768px){.mall-grid{grid-template-columns:1fr}.mall-controls{gap:1rem}}
+</style>
+
+<script>
+  const MALLS_DATA = [
+    // АЗИЈА
+    {region:'asia',country:'🇮🇳 Индија',name:'Phoenix Marketcity',city:'Мумбаи, Бангалор',visitors:'30M+',area:'1.4M m²',priority:'high',note:'Мулти-градска мрежа'},
+    {region:'asia',country:'🇮🇳 Индија',name:'DLF Promenade & Select Citywalk',city:'Њу Делхи',visitors:'25M+',area:'1M m²',priority:'high',note:'Премиум локација'},
+    {region:'asia',country:'🇨🇳 Кина',name:'New South China Mall',city:'Донггуан',visitors:'10M+',area:'0.9M m²',priority:'high',note:'Најголем мол во светот'},
+    {region:'asia',country:'🇯🇵 Јапонија',name:'Seaside Momofuku',city:'Токио',visitors:'18M+',area:'0.35M m²',priority:'high',note:'Главен град, технолошки хаб'},
+    {region:'asia',country:'🇸🇬 Сингапур',name:'Marina Bay Sands',city:'Марина Беј',visitors:'28M+',area:'0.18M m²',priority:'high',note:'Интегриран ресорт'},
+    {region:'asia',country:'🇹🇭 Тајланд',name:'CentralWorld',city:'Бангкок',visitors:'30M+',area:'0.55M m²',priority:'high',note:'Најголем во Тајланд'},
+    {region:'asia',country:'🇲🇾 Малезија',name:'1Utama',city:'Куала Лумпур',visitors:'28M+',area:'0.5M m²',priority:'high',note:'Најголем во Малезија'},
+    {region:'asia',country:'🇵🇭 Филипини',name:'SM Mall of Asia',city:'Манила',visitors:'30M+',area:'0.6M m²',priority:'high',note:'4-ти најголем во светот'},
+
+    // АФРИКА
+    {region:'africa',country:'🇿🇦 Јужна Африка',name:'Fourways Mall',city:'Јоханесбург',visitors:'15M+',area:'0.25M m²',priority:'high',note:'Експанзија во тек'},
+    {region:'africa',country:'🇪🇬 Египет',name:'City Stars Mall',city:'Каиро',visitors:'20M+',area:'0.4M m²',priority:'high',note:'Најголем во Африка/Близок Исток'},
+    {region:'africa',country:'🇳🇬 Нигерија',name:'Ikeja City Mall',city:'Лагос',visitors:'10M+',area:'0.15M m²',priority:'high',note:'Економски центар'},
+    {region:'africa',country:'🇰🇪 Кенија',name:'Two Rivers Mall',city:'Најроби',visitors:'9M+',area:'0.15M m²',priority:'high',note:'Најголем во Источна Африка'},
+    {region:'africa',country:'🇲🇦 Мароко',name:'Morocco Mall',city:'Казабланка',visitors:'12M+',area:'0.25M m²',priority:'high',note:'Најголем во Африка'},
+
+    // СЕВЕРНА АМЕРИКА
+    {region:'namerica',country:'🇺🇸 САД',name:'Mall of America',city:'Минесота',visitors:'40M+',area:'0.4M m²',priority:'critical',note:'Најпосетуван во САД'},
+    {region:'namerica',country:'🇺🇸 САД',name:'King of Prussia Mall',city:'Пенсилванија',visitors:'22M+',area:'0.35M m²',priority:'high',note:'Најголем по површина'},
+    {region:'namerica',country:'🇨🇦 Канада',name:'West Edmonton Mall',city:'Алберта',visitors:'28M+',area:'0.5M m²',priority:'critical',note:'Најголем во Канада'},
+    {region:'namerica',country:'🇨🇦 Канада',name:'CF Toronto Eaton Centre',city:'Торонто',visitors:'30M+',area:'0.25M m²',priority:'high',note:'Најпосетуван во Канада'},
+    {region:'namerica',country:'🇲🇽 Мексико',name:'Centro Santa Fe',city:'Мексико Сити',visitors:'25M+',area:'0.35M m²',priority:'high',note:'Најголем во Латинска Америка'},
+
+    // ЈУЖНА АМЕРИКА
+    {region:'samerica',country:'🇧🇷 Бразил',name:'Morumbi Shopping',city:'Сао Паоло',visitors:'22M+',area:'0.25M m²',priority:'high',note:'Економски центар'},
+    {region:'samerica',country:'🇧🇷 Бразил',name:'Barra Shopping',city:'Рио де Жанеиро',visitors:'16M+',area:'0.2M m²',priority:'high',note:'Најголем во Рио'},
+    {region:'samerica',country:'🇨🇱 Чиле',name:'Costanera Center',city:'Сантјаго',visitors:'22M+',area:'0.25M m²',priority:'critical',note:'Највисока зграда во Латинска Америка'},
+    {region:'samerica',country:'🇨🇴 Колумбија',name:'Centro Comercial Andino',city:'Богота',visitors:'18M+',area:'0.15M m²',priority:'high',note:'Премиум локација'},
+    {region:'samerica',country:'🇵🇪 Перу',name:'Jockey Plaza',city:'Лима',visitors:'15M+',area:'0.12M m²',priority:'high',note:'Јужна Лима, премиум сегмент'},
+
+    // ОКЕАНИЈА
+    {region:'oceania',country:'🇦🇺 Австралија',name:'Chadstone Shopping Centre',city:'Мелбурн',visitors:'30M+',area:'0.25M m²',priority:'critical',note:'Најголем на јужната полутопка'},
+    {region:'oceania',country:'🇦🇺 Австралија',name:'Westfield Sydney',city:'Сиднеј',visitors:'25M+',area:'0.18M m²',priority:'high',note:'CBD локација'},
+    {region:'oceania',country:'🇦🇺 Австралија',name:'Pacific Fair',city:'Gold Coast',visitors:'22M+',area:'0.2M m²',priority:'high',note:'Туристичка дестинација'},
+    {region:'oceania',country:'🇳🇿 Нов Зеланд',name:'Sylvia Park',city:'Окланд',visitors:'15M+',area:'0.12M m²',priority:'high',note:'Најголем во Нов Зеланд'},
+
+    // ОКЕАНИ / ОСТРОВСКИ
+    {region:'oceans',country:'🌊 Тихи Океан',name:'Ala Moana Center',city:'Хонолулу, Хаваи',visitors:'25M+',area:'0.22M m²',priority:'critical',note:'Најголем open-air мол во светот'},
+    {region:'oceans',country:'🌊 Индиски Океан',name:'The Grove',city:'Коломбо, Шри Ланка',visitors:'10M+',area:'0.12M m²',priority:'high',note:'Главен град, крајбрежен'},
+    {region:'oceans',country:'🌊 Атлантски Океан',name:'Colombo Shopping Centre',city:'Лисабон, Португалија',visitors:'12M+',area:'0.18M m²',priority:'high',note:'Главен град, туристички раст'},
+    {region:'oceans',country:'🌊 Арктички Океан',name:'Reykjavik Shopping',city:'Рејкјавик, Исланд',visitors:'4M+',area:'0.06M m²',priority:'medium',note:'Туристички раст, одржлив фокус'}
+  ];
+
+  let activeRegion = 'all';
+
+  function getPriorityClass(p){
+    switch(p){
+      case 'critical': return 'priority-critical';
+      case 'high': return 'priority-high';
+      case 'medium': return 'priority-medium';
+      default: return 'priority-low';
+    }
+  }
+  function getPriorityLabel(p){
+    switch(p){
+      case 'critical': return '🔴 КРИТИЧЕН';
+      case 'high': return '🟡 ВИСОК';
+      case 'medium': return '🟢 СРЕДЕН';
+      default: return '⚪ НИЗОК';
+    }
+  }
+
+  function renderMalls(filter = ''){
+    const grid = document.getElementById('mallGrid');
+    grid.innerHTML = '';
+    const lowerFilter = filter.toLowerCase();
+    const filtered = MALLS_DATA.filter(m => {
+      const matchRegion = activeRegion === 'all' || m.region === activeRegion;
+      const matchSearch = !filter || m.name.toLowerCase().includes(lowerFilter) || m.country.toLowerCase().includes(lowerFilter) || m.city.toLowerCase().includes(lowerFilter) || m.note.toLowerCase().includes(lowerFilter);
+      return matchRegion && matchSearch;
+    });
+
+    if(filtered.length === 0){
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#666"><i class="fas fa-search" style="font-size:2rem;margin-bottom:1rem;display:block;opacity:.5"></i>Нема пронајдени молови за твојот пребарување.</div>`;
+      return;
+    }
+
+    filtered.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'mall-card';
+      card.innerHTML = `
+        <div class="mall-header">
+          <div class="mall-name">${m.country} ${m.name}</div>
+          <span class="mall-priority ${getPriorityClass(m.priority)}">${getPriorityLabel(m.priority)}</span>
+        </div>
+        <div class="mall-meta">
+          <span><i class="fas fa-map-marker-alt"></i> ${m.city}</span>
+          <span><i class="fas fa-users"></i> ${m.visitors} посетители</span>
+          <span><i class="fas fa-ruler-combined"></i> ${m.area}</span>
+        </div>
+        <div class="mall-note">${m.note}</div>
+        <div class="mall-region">🌍 Регион: ${m.region.charAt(0).toUpperCase()+m.region.slice(1)}</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderMalls();
+    const tabs = document.querySelectorAll('.mall-tab');
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      activeRegion = t.dataset.region;
+      renderMalls(document.getElementById('mallSearch').value);
+    }));
+    const search = document.getElementById('mallSearch');
+    search.addEventListener('input', () => renderMalls(search.value));
+  });
+</script>
   <!-- ===== AI AGENTS ===== -->
   <section class="section" id="ai" style="background:#f8f9fa">
     <div class="container">

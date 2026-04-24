@@ -53,7 +53,7 @@ const TRANSLATE_CONFIG = {
   cache: { enabled: true, ttl: 24 * 60 * 60 * 1000, maxSize: 1000 }
 };
 
-export class EcoTranslate {
+class EcoTranslate {
   constructor(options = {}) {
     this.config = { ...TRANSLATE_CONFIG, ...options };
     this.currentLang = this._detectUserLanguage();
@@ -223,7 +223,7 @@ export class EcoTranslate {
 
 // ===== ГЛОБАЛЕН ИНСТАНЦА =====
 export const ecoTranslate = new EcoTranslate();
-export default EcoTranslate;
+default EcoTranslate;
 
 // ===== АВТО-ИНИЦИЈАЛИЗАЦИЈА =====
 if (typeof document !== 'undefined') {

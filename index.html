@@ -22,17 +22,22 @@
         window.ecoTranslate = new window.EcoTranslate({ defaultLang: 'mk' });
         // Пополни го селекторот за јазик
         const selector = document.getElementById('language-selector');
-        if (selector && ecoTranslate.config && ecoTranslate.config.languages) {
-          for (const [code, name] of Object.entries(ecoTranslate.config.languages)) {
+        if (selector && window.ecoTranslate?.config?.languages) {
+          for (const [code, name] of Object.entries(window.ecoTranslate.config.languages)) {
             const option = document.createElement('option');
             option.value = code;
             option.textContent = name;
-            if (code === (ecoTranslate.currentLang || 'mk')) option.selected = true;
+            if (code === (window.ecoTranslate.currentLang || 'mk')) option.selected = true;
             selector.appendChild(option);
           }
-          selector.addEventListener('change', function(e) {
-            if (typeof ecoTranslate.setLanguage === 'function') {
-              ecoTranslate.setLanguage(e.target.value);
+          selector.addEventListener('change', async function(e) {
+            if (typeof window.ecoTranslate.setLanguage === 'function') {
+              await window.ecoTranslate.setLanguage(e.target.value);
+              // Преведи ги елементите со data-translate-key
+              const elements = document.querySelectorAll('[data-translate-key]');
+              if (elements.length > 0 && window.ecoTranslateInstance) {
+                await window.ecoTranslateInstance.translateUI(Array.from(elements), e.target.value);
+              }
             }
           });
         }
@@ -258,6 +263,10 @@
     .mall-note{font-size:.85rem;color:#666;background:#f8f9fa;padding:.6rem .8rem;border-radius:8px;margin-top:.2rem}
     @media(max-width:768px){.mall-grid{grid-template-columns:1fr}.mall-controls{gap:1rem}}
     
+    /* ===== LOCAL PARTNERS SECTION ===== */
+    #local-partners .card { border-top: 4px solid var(--primary); }
+    #local-partners .card-header { background: var(--gradient); }
+    
     /* ===== RESPONSIVE ===== */
     @media(max-width:1024px){.hero h1{font-size:3.2rem}.section-title h2{font-size:2.4rem}}
     @media(max-width:768px){.hero{padding:4rem 0 3rem}.hero h1{font-size:2.6rem}.hero p{font-size:1.2rem}.section{padding:4.5rem 0}.section-title h2{font-size:2rem}.grid{grid-template-columns:1fr}.header-content{flex-direction:column;text-align:center}nav ul{flex-wrap:wrap;justify-content:center}.auth-buttons{width:100%;justify-content:center}.stat-card{min-width:140px;padding:1.4rem}.stat-number{font-size:2.2rem}.calc-grid{grid-template-columns:1fr}.cta h2{font-size:2.2rem}.cta p{font-size:1.1rem}}
@@ -279,22 +288,22 @@
     <div class="container header-content">
       <div class="logo" onclick="scrollToTop()">
         <i class="fas fa-leaf floating"></i>
-        <span>Makedon Eco World</span>
+        <span data-translate-key="hero_title">Makedon Eco World</span>
       </div>
       <nav>
         <ul>
-          <li><a href="#" class="active">Дома</a></li>
-          <li><a href="#global">Глобално</a></li>
-          <li><a href="#features">Карактеристики</a></li>
-          <li><a href="#financial">Финансии</a></li>
-          <li><a href="#global-malls">Партнери</a></li>
-          <li><a href="#ai">AI Агенти</a></li>
-          <li><a href="#security">Безбедност</a></li>
+          <li><a href="#" class="active" data-translate-key="nav_home">Дома</a></li>
+          <li><a href="#global" data-translate-key="nav_global">Глобално</a></li>
+          <li><a href="#features" data-translate-key="nav_features">Карактеристики</a></li>
+          <li><a href="#financial" data-translate-key="nav_financial">Финансии</a></li>
+          <li><a href="#global-malls" data-translate-key="nav_partners">Партнери</a></li>
+          <li><a href="#ai" data-translate-key="nav_ai">AI Агенти</a></li>
+          <li><a href="#security" data-translate-key="nav_security">Безбедност</a></li>
         </ul>
       </nav>
       <div class="auth-buttons">
-        <button class="btn btn-outline" onclick="openModal('loginModal')"><i class="fas fa-user"></i> <span class="hide-mobile">Најави се</span></button>
-        <button class="btn btn-primary" onclick="startScan()"><i class="fas fa-qrcode"></i> <span class="hide-mobile">Скенрај</span></button>
+        <button class="btn btn-outline" onclick="openModal('loginModal')"><i class="fas fa-user"></i> <span class="hide-mobile" data-translate-key="btn_login">Најави се</span></button>
+        <button class="btn btn-primary" onclick="startScan()"><i class="fas fa-qrcode"></i> <span class="hide-mobile" data-translate-key="btn_scan">Скенрај</span></button>
       </div>
       <select id="language-selector" style="margin-left:10px;padding:8px 12px;border-radius:20px;border:2px solid #fff;background:rgba(255,255,255,.15);color:#fff;font-weight:500;cursor:pointer">
         <option value="mk">🇲🇰 МК</option>
@@ -310,17 +319,17 @@
   <!-- ===== HERO ===== -->
   <section class="hero">
     <div class="container">
-      <h1>🌍 Makedon Eco World</h1>
-      <p>Првата светска платформа за собирање шишиња со глобална валутизација. Секој оставен предмет = 1 EcoPoint = Глобална вредност. Почиста планета, пополн џеб!</p>
+      <h1 data-translate-key="hero_title">🌍 Makedon Eco World</h1>
+      <p data-translate-key="hero_description">Првата светска платформа за собирање шишиња со глобална валутизација. Секој оставен предмет = 1 EcoPoint = Глобална вредност. Почиста планета, пополн џеб!</p>
       <div class="auth-buttons" style="justify-content:center;margin-top:1rem">
-        <button class="btn btn-white btn-cta" onclick="startScan()"><i class="fas fa-play-circle"></i> Започни Сега</button>
-        <button class="btn btn-outline-white btn-cta" onclick="scrollToSection('howItWorks')"><i class="fas fa-info-circle"></i> Како Работи</button>
+        <button class="btn btn-white btn-cta" onclick="startScan()" data-translate-key="btn_start_now"><i class="fas fa-play-circle"></i> Започни Сега</button>
+        <button class="btn btn-outline-white btn-cta" onclick="scrollToSection('howItWorks')" data-translate-key="btn_learn_more"><i class="fas fa-info-circle"></i> Како Работи</button>
       </div>
       <div class="hero-stats">
-        <div class="stat-card"><span class="stat-number">60+</span><span class="stat-label">Земји</span></div>
-        <div class="stat-card"><span class="stat-number">98%</span><span class="stat-label">Ефикасност</span></div>
-        <div class="stat-card"><span class="stat-number">€0.25</span><span class="stat-label">Просек</span></div>
-        <div class="stat-card"><span class="stat-number" id="userPoints">0</span><span class="stat-label">Твои Поени</span></div>
+        <div class="stat-card"><span class="stat-number">60+</span><span class="stat-label" data-translate-key="stat_countries">Земји</span></div>
+        <div class="stat-card"><span class="stat-number">98%</span><span class="stat-label" data-translate-key="stat_efficiency">Ефикасност</span></div>
+        <div class="stat-card"><span class="stat-number">€0.25</span><span class="stat-label" data-translate-key="stat_average">Просек</span></div>
+        <div class="stat-card"><span class="stat-number" id="userPoints">0</span><span class="stat-label" data-translate-key="stat_your_points">Твои Поени</span></div>
       </div>
     </div>
   </section>
@@ -329,8 +338,8 @@
   <section class="section" id="global">
     <div class="container">
       <div class="section-title">
-        <h2>🌐 Глобална Анализа: Најдобрите Практики</h2>
-        <p>Ги интегриравме срцевините од најдобрите системи ширум светот во нашата платформа.</p>
+        <h2 data-translate-key="section_global_title">🌐 Глобална Анализа: Најдобрите Практики</h2>
+        <p data-translate-key="section_global_desc">Ги интегриравме срцевините од најдобрите системи ширум светот во нашата платформа.</p>
       </div>
       <div class="grid">
         <!-- Germany -->
@@ -389,57 +398,57 @@
   <section class="section" id="features" style="background:#f8f9fa">
     <div class="container">
       <div class="section-title">
-        <h2>✨ Карактеристики</h2>
-        <p>Секоја функција е дизајнирана да биде интуитивна, мотивирачка и глобално скалабилна.</p>
+        <h2 data-translate-key="section_features_title">✨ Карактеристики</h2>
+        <p data-translate-key="section_features_desc">Секоја функција е дизајнирана да биде интуитивна, мотивирачка и глобално скалабилна.</p>
       </div>
       <div class="grid">
         <div class="card feature-card">
           <div class="feature-icon"><i class="fas fa-qrcode"></i></div>
-          <h3>QR/Баркод Скенрање</h3>
-          <p>Скенрај го кодот на шишето/лименката. Нашиот AI веднаш го верификува и додава поени.</p>
+          <h3 data-translate-key="feature_scan_title">QR/Баркод Скенрање</h3>
+          <p data-translate-key="feature_scan_desc">Скенрај го кодот на шишето/лименката. Нашиот AI веднаш го верификува и додава поени.</p>
         </div>
         <div class="card feature-card">
           <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
-          <h3>Мапа на Точки</h3>
-          <p>Најди најблиски контејнери, автомати или партнерски локации со геолокација.</p>
+          <h3 data-translate-key="feature_map_title">Мапа на Точки</h3>
+          <p data-translate-key="feature_map_desc">Најди најблиски контејнери, автомати или партнерски локации со геолокација.</p>
         </div>
         <div class="card feature-card">
           <div class="feature-icon"><i class="fas fa-coins"></i></div>
-          <h3>Портфолио со Поени</h3>
-          <p>Следи ги твоите EcoPoints, види историја, конвертирај во пари, ваучери или донации.</p>
+          <h3 data-translate-key="feature_portfolio_title">Портфолио со Поени</h3>
+          <p data-translate-key="feature_portfolio_desc">Следи ги твоите EcoPoints, види историја, конвертирај во пари, ваучери или донации.</p>
         </div>
         <div class="card feature-card">
           <div class="feature-icon"><i class="fas fa-trophy"></i></div>
-          <h3>Гејмификација</h3>
-          <p>Освојувај нивоа, беџови и се натпреварувај со пријатели на глобални лидерборди.</p>
+          <h3 data-translate-key="feature_gamification_title">Гејмификација</h3>
+          <p data-translate-key="feature_gamification_desc">Освојувај нивоа, беџови и се натпреварувај со пријатели на глобални лидерборди.</p>
         </div>
         <div class="card feature-card">
           <div class="feature-icon"><i class="fas fa-hand-holding-heart"></i></div>
-          <h3>Донации за Екологија</h3>
-          <p>Претвори ги поените во донации за шуми, океани или локални еколошки проекти.</p>
+          <h3 data-translate-key="feature_donations_title">Донации за Екологија</h3>
+          <p data-translate-key="feature_donations_desc">Претвори ги поените во донации за шуми, океани или локални еколошки проекти.</p>
         </div>
         <div class="card feature-card">
           <div class="feature-icon"><i class="fas fa-users"></i></div>
-          <h3>Социјални Предизвици</h3>
-          <p>Создади тим со пријатели, постави заеднички цели и освојувај бонус поени.</p>
+          <h3 data-translate-key="feature_social_title">Социјални Предизвици</h3>
+          <p data-translate-key="feature_social_desc">Создади тим со пријатели, постави заеднички цели и освојувај бонус поени.</p>
         </div>
       </div>
 
       <!-- Calculator -->
       <div class="calculator">
-        <h3 style="text-align:center;margin-bottom:1rem;color:var(--dark);font-size:1.6rem"><i class="fas fa-calculator"></i> Калкулатор: Колку Можеш Да Заработиш?</h3>
-        <p style="text-align:center;color:#666;margin-bottom:1.5rem">Внеси колку шишиња/лименки собираш неделно и види ја твојата потенцијална заработка.</p>
+        <h3 style="text-align:center;margin-bottom:1rem;color:var(--dark);font-size:1.6rem"><i class="fas fa-calculator"></i> <span data-translate-key="calculator_title">Калкулатор: Колку Можеш Да Заработиш?</span></h3>
+        <p style="text-align:center;color:#666;margin-bottom:1.5rem" data-translate-key="calculator_desc">Внеси колку шишиња/лименки собираш неделно и види ја твојата потенцијална заработка.</p>
         <div class="calc-grid">
           <div class="calc-input">
-            <label for="bottles">🍶 Шишиња неделно</label>
+            <label for="bottles">🍶 <span data-translate-key="calc_bottles">Шишиња неделно</span></label>
             <input type="number" id="bottles" placeholder="на пр. 10" min="0" value="10">
           </div>
           <div class="calc-input">
-            <label for="cans">🥫 Лименки неделно</label>
+            <label for="cans">🥫 <span data-translate-key="calc_cans">Лименки неделно</span></label>
             <input type="number" id="cans" placeholder="на пр. 15" min="0" value="15">
           </div>
           <div class="calc-input">
-            <label for="country">🌍 Земја за конверзија</label>
+            <label for="country">🌍 <span data-translate-key="calc_country">Земја за конверзија</span></label>
             <select id="country">
               <option value="mk">🇲🇰 Северна Македонија</option>
               <option value="de">🇩🇪 Германија</option>
@@ -450,17 +459,17 @@
           </div>
         </div>
         <div class="calc-result">
-          <span class="calc-result-label">Твојата неделна заработка:</span>
+          <span class="calc-result-label" data-translate-key="calc_result_label">Твојата неделна заработка:</span>
           <span class="calc-result-value" id="resultValue">€3.75</span>
-          <span class="calc-result-currency">или <span id="resultPoints">25</span> EcoPoints</span>
-          <p class="calc-result-note"><i class="fas fa-info-circle"></i> Вредноста варира според локалниот депозит. Платформата автоматски ја конвертира.</p>
+          <span class="calc-result-currency"><span data-translate-key="calc_or">или</span> <span id="resultPoints">25</span> EcoPoints</span>
+          <p class="calc-result-note"><i class="fas fa-info-circle"></i> <span data-translate-key="calc_note">Вредноста варира според локалниот депозит. Платформата автоматски ја конвертира.</span></p>
         </div>
       </div>
 
       <!-- Map Preview -->
       <div style="background:#fff;border-radius:var(--border-radius);padding:2rem;box-shadow:var(--card-shadow);margin-top:2.5rem">
-        <h3 style="color:var(--dark);margin-bottom:1rem;text-align:center;font-size:1.5rem"><i class="fas fa-globe-europe"></i> Глобална Мрежа на Точки</h3>
-        <p style="color:#666;text-align:center;max-width:700px;margin:0 auto 1.5rem">Платформата автоматски ги прикажува најблиските точки за враќање шишиња, без разлика каде си.</p>
+        <h3 style="color:var(--dark);margin-bottom:1rem;text-align:center;font-size:1.5rem"><i class="fas fa-globe-europe"></i> <span data-translate-key="map_title">Глобална Мрежа на Точки</span></h3>
+        <p style="color:#666;text-align:center;max-width:700px;margin:0 auto 1.5rem" data-translate-key="map_desc">Платформата автоматски ги прикажува најблиските точки за враќање шишиња, без разлика каде си.</p>
         <div id="map"></div>
         <div class="map-legend">
           <div class="legend-item"><span class="legend-dot pakomak"></span> Пакомак</div>
@@ -476,38 +485,38 @@
   <section class="section" id="financial">
     <div class="container">
       <div class="section-title">
-        <h2>💰 Финансиски Модел</h2>
-        <p>Платформата е дизајнирана да биде финансиски одржлива и профитабилна за сите учесници.</p>
+        <h2 data-translate-key="section_financial_title">💰 Финансиски Модел</h2>
+        <p data-translate-key="section_financial_desc">Платформата е дизајнирана да биде финансиски одржлива и профитабилна за сите учесници.</p>
       </div>
       <div class="grid">
         <div class="card" style="border-left:4px solid var(--accent)">
           <div class="card-body">
-            <h4><i class="fas fa-percentage"></i> Провизија од Трансакции</h4>
-            <p>Мала провизија (2-5%) при конверзија на EcoPoints во пари или ваучери. Прозирно и фер.</p>
+            <h4><i class="fas fa-percentage"></i> <span data-translate-key="financial_commission">Провизија од Трансакции</span></h4>
+            <p data-translate-key="financial_commission_desc">Мала провизија (2-5%) при конверзија на EcoPoints во пари или ваучери. Прозирно и фер.</p>
           </div>
         </div>
         <div class="card" style="border-left:4px solid var(--accent)">
           <div class="card-body">
-            <h4><i class="fas fa-ad"></i> Рекламен Простор</h4>
-            <p>Брендови плаќаат за прикажување на еколошки кампањи. Корисниците добиваат бонус поени.</p>
+            <h4><i class="fas fa-ad"></i> <span data-translate-key="financial_ads">Рекламен Простор</span></h4>
+            <p data-translate-key="financial_ads_desc">Брендови плаќаат за прикажување на еколошки кампањи. Корисниците добиваат бонус поени.</p>
           </div>
         </div>
         <div class="card" style="border-left:4px solid var(--accent)">
           <div class="card-body">
-            <h4><i class="fas fa-handshake"></i> Партнерски Провизии</h4>
-            <p>Провизија од молови и продавници кога корисникот ги користи своите поени кај нив.</p>
+            <h4><i class="fas fa-handshake"></i> <span data-translate-key="financial_partners">Партнерски Провизии</span></h4>
+            <p data-translate-key="financial_partners_desc">Провизија од молови и продавници кога корисникот ги користи своите поени кај нив.</p>
           </div>
         </div>
         <div class="card" style="border-left:4px solid var(--accent)">
           <div class="card-body">
-            <h4><i class="fas fa-database"></i> Анонимизирани Податоци</h4>
-            <p>Агрегирани, анонимизирани податоци за трендови во рециклирањето за истражувачки институции.</p>
+            <h4><i class="fas fa-database"></i> <span data-translate-key="financial_data">Анонимизирани Податоци</span></h4>
+            <p data-translate-key="financial_data_desc">Агрегирани, анонимизирани податоци за трендови во рециклирањето за истражувачки институции.</p>
           </div>
         </div>
       </div>
       
-      <h3 style="text-align:center;color:var(--dark);margin:3rem 0 1.5rem;font-size:1.6rem"><i class="fas fa-credit-card"></i> Интеграција со Платежни Системи</h3>
-      <p style="text-align:center;color:#666;max-width:700px;margin:0 auto 1.5rem">Безбедна исплата на заработката преку светски признати платформи. Сите трансакции се енд-ту-енд енкриптирани.</p>
+      <h3 style="text-align:center;color:var(--dark);margin:3rem 0 1.5rem;font-size:1.6rem"><i class="fas fa-credit-card"></i> <span data-translate-key="financial_payments_title">Интеграција со Платежни Системи</span></h3>
+      <p style="text-align:center;color:#666;max-width:700px;margin:0 auto 1.5rem" data-translate-key="financial_payments_desc">Безбедна исплата на заработката преку светски признати платформи. Сите трансакции се енд-ту-енд енкриптирани.</p>
       <div class="payments">
         <div class="payment-badge stripe"><i class="fab fa-stripe"></i> Stripe</div>
         <div class="payment-badge paypal"><i class="fab fa-paypal"></i> PayPal</div>
@@ -515,8 +524,8 @@
         <div class="payment-badge mastercard"><i class="fab fa-cc-mastercard"></i> Mastercard Send</div>
       </div>
       <div style="background:linear-gradient(135deg,#e8f5e9,#d4edda);padding:1.8rem;border-radius:16px;margin-top:2.5rem;border-left:4px solid var(--primary)">
-        <strong style="color:var(--primary-dark);display:block;margin-bottom:.8rem;font-size:1.1rem"><i class="fas fa-shield-alt"></i> Финансиска Безбедност на Ниво на Банка</strong>
-        <span style="color:#555;font-size:1rem;line-height:1.6">Сите платежни процеси се <strong>PCI DSS комплајантни</strong>. Никогаш не чуваме директни податоци од картички – користиме токенизација и енд-ту-енд енкрипција (TLS 1.3+). Регуларни безбедносни аудити од трети страни.</span>
+        <strong style="color:var(--primary-dark);display:block;margin-bottom:.8rem;font-size:1.1rem"><i class="fas fa-shield-alt"></i> <span data-translate-key="financial_security_title">Финансиска Безбедност на Ниво на Банка</span></strong>
+        <span style="color:#555;font-size:1rem;line-height:1.6"><span data-translate-key="financial_security_desc">Сите платежни процеси се <strong>PCI DSS комплајантни</strong>. Никогаш не чуваме директни податоци од картички – користиме токенизација и енд-ту-енд енкрипција (TLS 1.3+). Регуларни безбедносни аудити од трети страни.</span></span>
       </div>
     </div>
   </section>
@@ -525,8 +534,8 @@
   <section class="section" id="global-malls">
     <div class="container">
       <div class="section-title">
-        <h2>🏢 Глобални Трговски Центри & Молови</h2>
-        <p>Стратешки партнери за глобална експанзија на Makedon Eco World</p>
+        <h2 data-translate-key="malls_title">🏢 Глобални Трговски Центри & Молови</h2>
+        <p data-translate-key="malls_desc">Стратешки партнери за глобална експанзија на Makedon Eco World</p>
       </div>
 
       <div class="mall-controls">
@@ -535,183 +544,185 @@
           <input type="text" id="mallSearch" placeholder="Пребарај мол, земја или регион...">
         </div>
         <div class="mall-tabs" id="mallTabs">
-          <button class="mall-tab active" data-region="all">🌐 Сите</button>
-          <button class="mall-tab" data-region="asia">🌏 Азија</button>
-          <button class="mall-tab" data-region="africa">🌍 Африка</button>
-          <button class="mall-tab" data-region="namerica">🌎 Северна Америка</button>
-          <button class="mall-tab" data-region="samerica">🌎 Јужна Америка</button>
-          <button class="mall-tab" data-region="oceania">🌏 Океанија</button>
-          <button class="mall-tab" data-region="oceans">🌊 Океани</button>
+          <button class="mall-tab active" data-region="all">🌐 <span data-translate-key="malls_tab_all">Сите</span></button>
+          <button class="mall-tab" data-region="asia">🌏 <span data-translate-key="malls_tab_asia">Азија</span></button>
+          <button class="mall-tab" data-region="africa">🌍 <span data-translate-key="malls_tab_africa">Африка</span></button>
+          <button class="mall-tab" data-region="namerica">🌎 <span data-translate-key="malls_tab_namerica">Северна Америка</span></button>
+          <button class="mall-tab" data-region="samerica">🌎 <span data-translate-key="malls_tab_samerica">Јужна Америка</span></button>
+          <button class="mall-tab" data-region="oceania">🌏 <span data-translate-key="malls_tab_oceania">Океанија</span></button>
+          <button class="mall-tab" data-region="oceans">🌊 <span data-translate-key="malls_tab_oceans">Океани</span></button>
         </div>
       </div>
 
       <div class="mall-grid" id="mallGrid"></div>
     </div>
   </section>
-<!-- ===== LOCAL PARTNERS SECTION ===== -->
-<section class="section" id="local-partners" style="background:#f8f9fa">
-  <div class="container">
-    <div class="section-title">
-      <h2>🇲🇰 Локални Партнери во Македонија</h2>
-      <p>Нашите стратешки сојузници на домашниот пазар — заедно градиме почиста иднина</p>
+
+  <!-- ===== LOCAL PARTNERS SECTION ===== -->
+  <section class="section" id="local-partners" style="background:#f8f9fa">
+    <div class="container">
+      <div class="section-title">
+        <h2 data-translate-key="local_partners_title">🇲🇰 Локални Партнери во Македонија</h2>
+        <p data-translate-key="local_partners_desc">Нашите стратешки сојузници на домашниот пазар — заедно градиме почиста иднина</p>
+      </div>
+      
+      <div class="grid">
+        <!-- КАМ -->
+        <div class="card" style="border-top:4px solid #2ecc71">
+          <div class="card-header" style="background:linear-gradient(135deg,#2ecc71,#27ae60)">
+            <span class="country-flag">🏆</span>
+            <span class="country-name">КАМ</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Водечки по приходи</strong> во Македонија (€270M+ во 2023). Мрежа од 100+ локации низ целата земја.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">100+</span><span class="card-stat-label">Локации</span></div>
+              <div class="card-stat"><span class="card-stat-value">500k+</span><span class="card-stat-label">Купувачи/недела</span></div>
+            </div>
+            <div class="best-practice">
+              <strong>🤝 Партнерски предлог:</strong> Пилот програма во 10 локации во Скопје + КАМ Eco Bonus (поени → попуст на каса).
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-check-circle"></i> <span data-translate-key="partner_status_ready">Спремни за пилот</span></span>
+              <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> <span data-translate-key="partner_status_mou">МоУ во подготовка</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vero -->
+        <div class="card" style="border-top:4px solid #3498db">
+          <div class="card-header" style="background:linear-gradient(135deg,#3498db,#2980b9)">
+            <span class="country-flag">🏆</span>
+            <span class="country-name">Vero (Веропулос)</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Највисока профитна маржа</strong> на македонскиот пазар. Фокус на квалитет, локални производи и заедница.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">80+</span><span class="card-stat-label">Локации</span></div>
+              <div class="card-stat"><span class="card-stat-value">400k+</span><span class="card-stat-label">Купувачи/недела</span></div>
+            </div>
+            <div class="best-practice">
+              <strong>🤝 Партнерски предлог:</strong> Vero Green Points + еколошки награди (бесплатни еко-производи за рециклирање).
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-check-circle"></i> <span data-translate-key="partner_status_interest">Интерес потврден</span></span>
+              <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> <span data-translate-key="partner_status_talks">Првични разговори</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Пакомак -->
+        <div class="card" style="border-top:4px solid #9b59b6">
+          <div class="card-header" style="background:linear-gradient(135deg,#9b59b6,#8e44ad)">
+            <span class="country-flag">♻️</span>
+            <span class="country-name">Пакомак МК</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Непрофитна компанија</strong> со фокус на едукација, "зелени поени" за јавни услуги и национална мрежа за собирање.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">Пилот</span><span class="card-stat-label">Фаза</span></div>
+              <div class="card-stat"><span class="card-stat-value">1:1</span><span class="card-stat-label">Сисе=Поен</span></div>
+            </div>
+            <div class="best-practice">
+              <strong>🤝 Партнерски предлог:</strong> Интеграција на MEW EcoPoints во постоечкиот систем на Пакомак + заеднички едукативни кампањи.
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-handshake"></i> <span data-translate-key="partner_status_strategic">Стратешки партнер</span></span>
+              <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-cog"></i> <span data-translate-key="partner_status_integration">Техничка интеграција</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Кипер / Стокомак -->
+        <div class="card" style="border-top:4px solid #f39c12">
+          <div class="card-header" style="background:linear-gradient(135deg,#f39c12,#e67e22)">
+            <span class="country-flag">🤝</span>
+            <span class="country-name">Кипер • Стокомак</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Регионални лидери</strong> со силно присуство надвор од Скопје. Фокус на вредност, локални заедници и пристапност.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">50+</span><span class="card-stat-label">Комбинирани локации</span></div>
+              <div class="card-stat"><span class="card-stat-value">Рурален</span><span class="card-stat-label">Фокус</span></div>
+            </div>
+            <div class="best-practice">
+              <strong>🤝 Партнерски предлог:</strong> "Еко-дисконт" модел (рециклирање = дополнителен попуст) + рурален пилот за пристап до помали заедници.
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> <span data-translate-key="partner_status_contact">Контакт во тек</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Житомакрети -->
+        <div class="card" style="border-top:4px solid #e74c3c">
+          <div class="card-header" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">
+            <span class="country-flag">🥖</span>
+            <span class="country-name">Житомакрети</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Водечки во пекарски и прехранбени производи</strong>. Мрежа од локали и супермаркети низ Македонија.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">70+</span><span class="card-stat-label">Локации</span></div>
+              <div class="card-stat"><span class="card-stat-value">200k+</span><span class="card-stat-label">Дневни посети</span></div>
+            </div>
+            <div class="best-practice">
+              <strong>🤝 Партнерски предлог:</strong> "Еко-пакување" иницијатива + поени за враќање на амбалажа од Житомакрети производи.
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> <span data-translate-key="partner_status_research">Истражување</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Енергетски партнери: Лукоил, Макпетрол, Окта -->
+        <div class="card" style="border-top:4px solid #34495e">
+          <div class="card-header" style="background:linear-gradient(135deg,#34495e,#2c3e50)">
+            <span class="country-flag">⛽</span>
+            <span class="country-name">Лукоил • Макпетрол • Окта</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Енергетски гиганти</strong> со мрежа на бензински станиции низ Македонија. Идеални локации за автомати за шишиња.</p>
+            <div class="card-stats">
+              <div class="card-stat"><span class="card-stat-value">150+</span><span class="card-stat-label">Бензински станиции</span></div>
+              <div class="card-stat"><span class="card-stat-value">24/7</span><span class="card-stat-label">Достапност</span></div>
+            </div>
+            <div class="best-practice">
+              <strong>🤝 Партнерски предлог:</strong> Поставување на MEW автомати на бензински станиции + "Еко-гориво" поени (рециклирање = попуст на гориво).
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> <span data-translate-key="partner_status_strategic_talks">Стратешки разговори</span></span>
+              <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-lightbulb"></i> <span data-translate-key="partner_status_pilot">Пилот концепт</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Партнерски повик за акција -->
+      <div style="background:var(--gradient);border-radius:var(--border-radius);padding:2.5rem;color:#fff;margin-top:2.5rem;text-align:center">
+        <h3 style="margin-bottom:1rem;font-size:1.8rem"><i class="fas fa-handshake"></i> <span data-translate-key="local_partners_cta_title">Станете дел од движењето!</span></h3>
+        <p style="opacity:.95;max-width:700px;margin:0 auto 1.5rem;font-size:1.1rem" data-translate-key="local_partners_cta_desc">
+          Дали вашата компанија сака да биде дел од глобалната еколошка револуција? 
+          Контактирајте нѐ за стратешко партнерство.
+        </p>
+        <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
+          <a href="mailto:makedonecoworld@outlook.com" class="btn btn-white btn-cta" style="padding:14px 32px;font-size:1.05rem">
+            <i class="fas fa-envelope"></i> <span data-translate-key="btn_contact">Контактирај нѐ</span>
+          </a>
+          <button class="btn btn-outline-white btn-cta" style="padding:14px 32px;font-size:1.05rem" onclick="downloadSpecs()">
+            <i class="fas fa-file-contract"></i> <span data-translate-key="btn_download_mou">Преземи МоУ Шаблон</span>
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <div class="grid">
-      <!-- КАМ -->
-      <div class="card" style="border-top:4px solid #2ecc71">
-        <div class="card-header" style="background:linear-gradient(135deg,#2ecc71,#27ae60)">
-          <span class="country-flag">🏆</span>
-          <span class="country-name">КАМ</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Водечки по приходи</strong> во Македонија (€270M+ во 2023). Мрежа од 100+ локации низ целата земја.</p>
-          <div class="card-stats">
-            <div class="card-stat"><span class="card-stat-value">100+</span><span class="card-stat-label">Локации</span></div>
-            <div class="card-stat"><span class="card-stat-value">500k+</span><span class="card-stat-label">Купувачи/недела</span></div>
-          </div>
-          <div class="best-practice">
-            <strong>🤝 Партнерски предлог:</strong> Пилот програма во 10 локации во Скопје + КАМ Eco Bonus (поени → попуст на каса).
-          </div>
-          <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
-            <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-check-circle"></i> Спремни за пилот</span>
-            <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> МоУ во подготовка</span>
-          </div>
-        </div>
-      </div>
+  </section>
 
-      <!-- Vero -->
-      <div class="card" style="border-top:4px solid #3498db">
-        <div class="card-header" style="background:linear-gradient(135deg,#3498db,#2980b9)">
-          <span class="country-flag">🏆</span>
-          <span class="country-name">Vero (Веропулос)</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Највисока профитна маржа</strong> на македонскиот пазар. Фокус на квалитет, локални производи и заедница.</p>
-          <div class="card-stats">
-            <div class="card-stat"><span class="card-stat-value">80+</span><span class="card-stat-label">Локации</span></div>
-            <div class="card-stat"><span class="card-stat-value">400k+</span><span class="card-stat-label">Купувачи/недела</span></div>
-          </div>
-          <div class="best-practice">
-            <strong>🤝 Партнерски предлог:</strong> Vero Green Points + еколошки награди (бесплатни еко-производи за рециклирање).
-          </div>
-          <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
-            <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-check-circle"></i> Интерес потврден</span>
-            <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> Првични разговори</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Пакомак -->
-      <div class="card" style="border-top:4px solid #9b59b6">
-        <div class="card-header" style="background:linear-gradient(135deg,#9b59b6,#8e44ad)">
-          <span class="country-flag">♻️</span>
-          <span class="country-name">Пакомак МК</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Непрофитна компанија</strong> со фокус на едукација, "зелени поени" за јавни услуги и национална мрежа за собирање.</p>
-          <div class="card-stats">
-            <div class="card-stat"><span class="card-stat-value">Пилот</span><span class="card-stat-label">Фаза</span></div>
-            <div class="card-stat"><span class="card-stat-value">1:1</span><span class="card-stat-label">Сисе=Поен</span></div>
-          </div>
-          <div class="best-practice">
-            <strong>🤝 Партнерски предлог:</strong> Интеграција на MEW EcoPoints во постоечкиот систем на Пакомак + заеднички едукативни кампањи.
-          </div>
-          <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
-            <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-handshake"></i> Стратешки партнер</span>
-            <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-cog"></i> Техничка интеграција</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Кипер / Стокомак -->
-      <div class="card" style="border-top:4px solid #f39c12">
-        <div class="card-header" style="background:linear-gradient(135deg,#f39c12,#e67e22)">
-          <span class="country-flag">🤝</span>
-          <span class="country-name">Кипер • Стокомак</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Регионални лидери</strong> со силно присуство надвор од Скопје. Фокус на вредност, локални заедници и пристапност.</p>
-          <div class="card-stats">
-            <div class="card-stat"><span class="card-stat-value">50+</span><span class="card-stat-label">Комбинирани локации</span></div>
-            <div class="card-stat"><span class="card-stat-value">Рурален</span><span class="card-stat-label">Фокус</span></div>
-          </div>
-          <div class="best-practice">
-            <strong>🤝 Партнерски предлог:</strong> "Еко-дисконт" модел (рециклирање = дополнителен попуст) + рурален пилот за пристап до помали заедници.
-          </div>
-          <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
-            <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> Контакт во тек</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Житомакрети -->
-      <div class="card" style="border-top:4px solid #e74c3c">
-        <div class="card-header" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">
-          <span class="country-flag">🥖</span>
-          <span class="country-name">Житомакрети</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Водечки во пекарски и прехранбени производи</strong>. Мрежа од локали и супермаркети низ Македонија.</p>
-          <div class="card-stats">
-            <div class="card-stat"><span class="card-stat-value">70+</span><span class="card-stat-label">Локации</span></div>
-            <div class="card-stat"><span class="card-stat-value">200k+</span><span class="card-stat-label">Дневни посети</span></div>
-          </div>
-          <div class="best-practice">
-            <strong>🤝 Партнерски предлог:</strong> "Еко-пакување" иницијатива + поени за враќање на амбалажа од Житомакрети производи.
-          </div>
-          <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
-            <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> Истражување</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Енергетски партнери: Лукоил, Макпетрол, Окта -->
-      <div class="card" style="border-top:4px solid #34495e">
-        <div class="card-header" style="background:linear-gradient(135deg,#34495e,#2c3e50)">
-          <span class="country-flag">⛽</span>
-          <span class="country-name">Лукоил • Макпетрол • Окта</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Енергетски гиганти</strong> со мрежа на бензински станиции низ Македонија. Идеални локации за автомати за шишиња.</p>
-          <div class="card-stats">
-            <div class="card-stat"><span class="card-stat-value">150+</span><span class="card-stat-label">Бензински станиции</span></div>
-            <div class="card-stat"><span class="card-stat-value">24/7</span><span class="card-stat-label">Достапност</span></div>
-          </div>
-          <div class="best-practice">
-            <strong>🤝 Партнерски предлог:</strong> Поставување на MEW автомати на бензински станиции + "Еко-гориво" поени (рециклирање = попуст на гориво).
-          </div>
-          <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
-            <span class="agent-status status-processing" style="font-size:.8rem"><i class="fas fa-clock"></i> Стратешки разговори</span>
-            <span class="agent-status status-online" style="font-size:.8rem"><i class="fas fa-lightbulb"></i> Пилот концепт</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Партнерски повик за акција -->
-    <div style="background:var(--gradient);border-radius:var(--border-radius);padding:2.5rem;color:#fff;margin-top:2.5rem;text-align:center">
-      <h3 style="margin-bottom:1rem;font-size:1.8rem"><i class="fas fa-handshake"></i> Станете дел од движењето!</h3>
-      <p style="opacity:.95;max-width:700px;margin:0 auto 1.5rem;font-size:1.1rem">
-        Дали вашата компанија сака да биде дел од глобалната еколошка револуција? 
-        Контактирајте нѐ за стратешко партнерство.
-      </p>
-      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
-        <a href="mailto:makedonecoworld@outlook.com" class="btn btn-white btn-cta" style="padding:14px 32px;font-size:1.05rem">
-          <i class="fas fa-envelope"></i> Контактирај нѐ
-        </a>
-        <button class="btn btn-outline-white btn-cta" style="padding:14px 32px;font-size:1.05rem" onclick="downloadSpecs()">
-          <i class="fas fa-file-contract"></i> Преземи МоУ Шаблон
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
   <!-- ===== AI AGENTS ===== -->
   <section class="section" id="ai" style="background:#f8f9fa">
     <div class="container">
       <div class="section-title">
-        <h2>🤖 Проактивни AI Агенти</h2>
-        <p>Интегриравме најдобрите големи јазични модели кои работат заедно за паметна, безбедна и персонализирана платформа.</p>
+        <h2 data-translate-key="ai_title">🤖 Проактивни AI Агенти</h2>
+        <p data-translate-key="ai_desc">Интегриравме најдобрите големи јазични модели кои работат заедно за паметна, безбедна и персонализирана платформа.</p>
       </div>
       <div class="grid">
         <div class="agent-card qwen">
@@ -741,7 +752,7 @@
       </div>
       
       <div style="background:#fff;border-radius:var(--border-radius);padding:2.5rem;box-shadow:var(--card-shadow);margin-top:3rem">
-        <h3 style="color:var(--dark);margin-bottom:1.5rem;text-align:center;font-size:1.5rem"><i class="fas fa-sync-alt"></i> Работен Тек: Од Скенрање до Исплата</h3>
+        <h3 style="color:var(--dark);margin-bottom:1.5rem;text-align:center;font-size:1.5rem"><i class="fas fa-sync-alt"></i> <span data-translate-key="ai_workflow_title">Работен Тек: Од Скенрање до Исплата</span></h3>
         <ol style="color:#555;line-height:2.2;padding-left:1.8rem;max-width:850px;margin:0 auto;font-size:1.05rem">
           <li><strong>📸 Скенрање:</strong> Корисникот скенира шише → <em>Qwen</em> го верификува преку компјутерска визија + геолокација.</li>
           <li><strong>⭐ Поени:</strong> Системот додава 1 EcoPoint → <em>GPT</em> испраќа персонализирана честитка на македонски.</li>
@@ -757,52 +768,52 @@
   <section class="section" id="security">
     <div class="container">
       <div class="section-title">
-        <h2>🔐 Безбедносна Заштита</h2>
-        <p>Безбедноста е темелот. Нашата платформа ги надминува глобалните стандарди за заштита на податоци и финансиски трансакции.</p>
+        <h2 data-translate-key="security_title">🔐 Безбедносна Заштита</h2>
+        <p data-translate-key="security_desc">Безбедноста е темелот. Нашата платформа ги надминува глобалните стандарди за заштита на податоци и финансиски трансакции.</p>
       </div>
       <div class="grid">
         <div class="security-item">
           <div class="security-icon"><i class="fas fa-lock"></i></div>
-          <div><h4>Енд-ту-Енд Енкрипција</h4><p>Сите податоци се енкриптирани со TLS 1.3+ и AES-256. Нема "чист текст" никогаш.</p></div>
+          <div><h4 data-translate-key="security_encryption">Енд-ту-Енд Енкрипција</h4><p data-translate-key="security_encryption_desc">Сите податоци се енкриптирани со TLS 1.3+ и AES-256. Нема "чист текст" никогаш.</p></div>
         </div>
         <div class="security-item">
           <div class="security-icon"><i class="fas fa-user-shield"></i></div>
-          <div><h4>2FA Автентикација</h4><p>Задолжителна дво-факторска автентикација за сите корисници. Поддршка за SMS, email и апликации.</p></div>
+          <div><h4 data-translate-key="security_2fa">2FA Автентикација</h4><p data-translate-key="security_2fa_desc">Задолжителна дво-факторска автентикација за сите корисници. Поддршка за SMS, email и апликации.</p></div>
         </div>
         <div class="security-item">
           <div class="security-icon"><i class="fas fa-credit-card"></i></div>
-          <div><h4>PCI DSS Комплајанса</h4><p>Платежните процеси се сертифицирани според највисоките индустриски стандарди за безбедност на картички.</p></div>
+          <div><h4 data-translate-key="security_pci">PCI DSS Комплајанса</h4><p data-translate-key="security_pci_desc">Платежните процеси се сертифицирани според највисоките индустриски стандарди за безбедност на картички.</p></div>
         </div>
         <div class="security-item">
           <div class="security-icon"><i class="fas fa-user-secret"></i></div>
-          <div><h4>Токенизација</h4><p>Чувствителните податоци (картички, лични информации) се заменуваат со безбедни токени. Оригиналот никогаш не се чува.</p></div>
+          <div><h4 data-translate-key="security_tokenization">Токенизација</h4><p data-translate-key="security_tokenization_desc">Чувствителните податоци (картички, лични информации) се заменуваат со безбедни токени. Оригиналот никогаш не се чува.</p></div>
         </div>
         <div class="security-item">
           <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
-          <div><h4>Регуларни Аудити</h4><p>Независни безбедносни тестови (penetration testing) и SOC 2 аудити на секои 6 месеци.</p></div>
+          <div><h4 data-translate-key="security_audits">Регуларни Аудити</h4><p data-translate-key="security_audits_desc">Независни безбедносни тестови (penetration testing) и SOC 2 аудити на секои 6 месеци.</p></div>
         </div>
         <div class="security-item">
           <div class="security-icon"><i class="fas fa-globe-europe"></i></div>
-          <div><h4>ГДПР/ПДП Комплајанса</h4><p>Полна усогласеност со европските и македонските закони за заштита на лични податоци. Минимално собирање податоци.</p></div>
+          <div><h4 data-translate-key="security_gdpr">ГДПР/ПДП Комплајанса</h4><p data-translate-key="security_gdpr_desc">Полна усогласеност со европските и македонските закони за заштита на лични податоци. Минимално собирање податоци.</p></div>
         </div>
       </div>
 
       <!-- Gamification Preview -->
       <div class="gamification">
         <div class="gamification-content">
-          <h3 style="margin-bottom:1rem;font-size:1.9rem"><i class="fas fa-gamepad"></i> Гејмификација: Направи го Рециклирањето Забавно!</h3>
-          <p style="opacity:.95;max-width:700px;margin:0 auto 1.8rem">Освојувај нивоа, собирај беџови и се натпреварувај со пријатели. Секој напредок те носи поблиску до реални награди.</p>
+          <h3 style="margin-bottom:1rem;font-size:1.9rem"><i class="fas fa-gamepad"></i> <span data-translate-key="gamification_title">Гејмификација: Направи го Рециклирањето Забавно!</span></h3>
+          <p style="opacity:.95;max-width:700px;margin:0 auto 1.8rem" data-translate-key="gamification_desc">Освојувај нивоа, собирај беџови и се натпреварувај со пријатели. Секој напредок те носи поблиску до реални награди.</p>
           <div class="levels">
-            <div class="level-badge"><span class="level-icon">🌱</span><div class="level-name">Еко-Новач</div><div class="level-range">0-50 поени</div></div>
-            <div class="level-badge"><span class="level-icon">🌿</span><div class="level-name">Зелен Херој</div><div class="level-range">51-200 поени</div></div>
-            <div class="level-badge active"><span class="level-icon">🌳</span><div class="level-name">Планетарен Чувач</div><div class="level-range">201-500 поени</div></div>
-            <div class="level-badge"><span class="level-icon">🌍</span><div class="level-name">Глобален Лидер</div><div class="level-range">500+ поени</div></div>
+            <div class="level-badge"><span class="level-icon">🌱</span><div class="level-name" data-translate-key="level_newbie">Еко-Новач</div><div class="level-range">0-50 поени</div></div>
+            <div class="level-badge"><span class="level-icon">🌿</span><div class="level-name" data-translate-key="level_hero">Зелен Херој</div><div class="level-range">51-200 поени</div></div>
+            <div class="level-badge active"><span class="level-icon">🌳</span><div class="level-name" data-translate-key="level_guardian">Планетарен Чувач</div><div class="level-range">201-500 поени</div></div>
+            <div class="level-badge"><span class="level-icon">🌍</span><div class="level-name" data-translate-key="level_leader">Глобален Лидер</div><div class="level-range">500+ поени</div></div>
           </div>
           <div style="margin-top:2rem;text-align:center">
-            <span style="background:rgba(255,255,255,.25);padding:10px 24px;border-radius:50px;font-weight:600;display:inline-flex;align-items:center;gap:8px"><i class="fas fa-gift"></i> Награди: Поп-пусти • Бесплатни производи • Донации за екологија</span>
+            <span style="background:rgba(255,255,255,.25);padding:10px 24px;border-radius:50px;font-weight:600;display:inline-flex;align-items:center;gap:8px"><i class="fas fa-gift"></i> <span data-translate-key="gamification_rewards">Награди: Поп-пусти • Бесплатни производи • Донации за екологија</span></span>
           </div>
           <div style="margin-top:1.5rem">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:.5rem"><span style="font-size:.95rem">Напредок кон следно ниво:</span><span id="levelProgress" style="font-weight:600">38%</span></div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:.5rem"><span style="font-size:.95rem" data-translate-key="gamification_progress">Напредок кон следно ниво:</span><span id="levelProgress" style="font-weight:600">38%</span></div>
             <div class="progress-container"><div class="progress-bar" id="progressBar" style="width:38%"></div></div>
           </div>
         </div>
@@ -813,11 +824,11 @@
   <!-- ===== CTA ===== -->
   <section class="container">
     <div class="cta">
-      <h2>🚀 Готови Да Ја Создадеме Имперријата?</h2>
-      <p>Оваа платформа е твојот билет за глобално влијание. Секој собрани предмет е чекор кон почиста планета и финансиска слобода. Ајде да го направиме ова реалност, Санде!</p>
+      <h2 data-translate-key="cta_title">🚀 Готови Да Ја Создадеме Имперријата?</h2>
+      <p data-translate-key="cta_desc">Оваа платформа е твојот билет за глобално влијание. Секој собрани предмет е чекор кон почиста планета и финансиска слобода. Ајде да го направиме ова реалност, Санде!</p>
       <div class="cta-buttons">
-        <button class="btn btn-white btn-cta" onclick="startScan()"><i class="fas fa-rocket"></i> Започни Развој Сега</button>
-        <button class="btn btn-outline-white btn-cta" onclick="downloadSpecs()"><i class="fas fa-file-contract"></i> Преземи Спецификации</button>
+        <button class="btn btn-white btn-cta" onclick="startScan()" data-translate-key="btn_start_dev"><i class="fas fa-rocket"></i> Започни Развој Сега</button>
+        <button class="btn btn-outline-white btn-cta" onclick="downloadSpecs()" data-translate-key="btn_download_specs"><i class="fas fa-file-contract"></i> Преземи Спецификации</button>
       </div>
     </div>
   </section>
@@ -830,7 +841,7 @@
           <div class="logo" style="margin-bottom:1.5rem;color:#fff;font-size:1.6rem;cursor:pointer" onclick="scrollToTop()">
             <i class="fas fa-leaf"></i><span>Makedon Eco World</span>
           </div>
-          <p style="color:#ccc;line-height:1.7;margin-bottom:1.5rem;font-size:1rem">Првата светска платформа за собирање шишиња со глобална валутизација на поени. Секој предмет има вредност. Секој корисник е херој.</p>
+          <p style="color:#ccc;line-height:1.7;margin-bottom:1.5rem;font-size:1rem" data-translate-key="footer_desc">Првата светска платформа за собирање шишиња со глобална валутизација на поени. Секој предмет има вредност. Секој корисник е херој.</p>
           <div class="social-links">
             <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
             <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -840,39 +851,39 @@
           <p style="color:#aaa;font-size:.95rem;margin-top:1.2rem">📧 <a href="mailto:makedonecoworld@outlook.com" style="color:var(--primary)">makedonecoworld@outlook.com</a></p>
         </div>
         <div class="footer-col">
-          <h3>Платформа</h3>
+          <h3 data-translate-key="footer_platform">Платформа</h3>
           <ul>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Како Функционира</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Мапа на Точки</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Партнерски Програми</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> API Документација</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Статус на Системот</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_how">Како Функционира</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_map">Мапа на Точки</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_partners">Партнерски Програми</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_api">API Документација</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_status">Статус на Системот</span></a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3>Финансии</h3>
+          <h3 data-translate-key="footer_financial">Финансии</h3>
           <ul>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Конверзија на Поени</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Методи на Исплата</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Даночни Информации</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Провизии и Цени</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Финансиска Безбедност</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_convert">Конверзија на Поени</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_payout">Методи на Исплата</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_tax">Даночни Информации</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_fees">Провизии и Цени</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_security">Финансиска Безбедност</span></a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3>Поддршка</h3>
+          <h3 data-translate-key="footer_support">Поддршка</h3>
           <ul>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Често Поставувани Прашања</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Контакт Формулар</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Центар за Помош</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Пријави Проблем</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Блог и Новости</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_faq">Често Поставувани Прашања</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_contact">Контакт Формулар</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_help">Центар за Помош</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_report">Пријави Проблем</span></a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> <span data-translate-key="footer_blog">Блог и Новости</span></a></li>
           </ul>
         </div>
       </div>
       <div class="copyright">
         <p>&copy; 2026 Makedon Eco World. Сите права задржани. | Дизајнирано со ❤️ за почиста планета | <a href="#">Политика за Приватност</a> | <a href="#">Услови за Користење</a></p>
-        <p style="margin-top:.5rem;font-size:.95rem;opacity:.85">Платформата е во развој. Партнерство со Пакомак МК и глобални еколошки организации.</p>
+        <p style="margin-top:.5rem;font-size:.95rem;opacity:.85" data-translate-key="footer_note">Платформата е во развој. Партнерство со Пакомак МК и глобални еколошки организации.</p>
       </div>
     </div>
   </footer>
@@ -881,10 +892,10 @@
   <div class="modal" id="scanModal" role="dialog" aria-labelledby="scanTitle">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal('scanModal')" aria-label="Затвори">&times;</button>
-      <h3 id="scanTitle" style="color:var(--dark);margin-bottom:1rem;font-size:1.5rem"><i class="fas fa-qrcode"></i> Скенрај Предмет</h3>
-      <p style="color:#666;margin-bottom:1.2rem;font-size:1rem">Насочи ја камерата кон баркодот или логото на шишето/лименката. Осигурај се дека е добро осветлено.</p>
+      <h3 id="scanTitle" style="color:var(--dark);margin-bottom:1rem;font-size:1.5rem"><i class="fas fa-qrcode"></i> <span data-translate-key="scan_modal_title">Скенрај Предмет</span></h3>
+      <p style="color:#666;margin-bottom:1.2rem;font-size:1rem" data-translate-key="scan_modal_desc">Насочи ја камерата кон баркодот или логото на шишето/лименката. Осигурај се дека е добро осветлено.</p>
       <video id="camera-preview" autoplay playsinline muted></video>
-      <button class="btn btn-primary" id="captureBtn" style="width:100%;justify-content:center;padding:14px;font-size:1.05rem" onclick="captureAndVerify()"><i class="fas fa-camera"></i> Снимка и Верификација</button>
+      <button class="btn btn-primary" id="captureBtn" style="width:100%;justify-content:center;padding:14px;font-size:1.05rem" onclick="captureAndVerify()"><i class="fas fa-camera"></i> <span data-translate-key="btn_capture">Снимка и Верификација</span></button>
       <div id="scan-result">
         <p id="scan-message" style="font-weight:600;margin-bottom:.5rem;font-size:1.1rem"></p>
         <p id="scan-points" style="color:var(--primary);font-size:1.3rem;font-weight:700"></p>
@@ -897,18 +908,18 @@
   <div class="modal" id="loginModal" role="dialog" aria-labelledby="loginTitle">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Затвори">&times;</button>
-      <h3 id="loginTitle" style="color:var(--dark);margin-bottom:1.5rem;font-size:1.5rem"><i class="fas fa-user"></i> Најави се или Регистрирај се</h3>
+      <h3 id="loginTitle" style="color:var(--dark);margin-bottom:1.5rem;font-size:1.5rem"><i class="fas fa-user"></i> <span data-translate-key="login_modal_title">Најави се или Регистрирај се</span></h3>
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div style="margin-bottom:1.2rem">
-          <label for="email" style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--dark)">Е-пошта</label>
+          <label for="email" style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--dark)"><span data-translate-key="label_email">Е-пошта</span></label>
           <input type="email" id="email" required placeholder="tvoj@email.com" style="width:100%;padding:14px;border:2px solid #ddd;border-radius:12px;font-size:1rem">
         </div>
         <div style="margin-bottom:1.5rem">
-          <label for="password" style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--dark)">Лозинка</label>
+          <label for="password" style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--dark)"><span data-translate-key="label_password">Лозинка</span></label>
           <input type="password" id="password" required placeholder="••••••••" style="width:100%;padding:14px;border:2px solid #ddd;border-radius:12px;font-size:1rem">
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:1.05rem"><i class="fas fa-sign-in-alt"></i> Најави се</button>
-        <p style="text-align:center;margin-top:1.2rem;color:#666;font-size:1rem">Немаш сметка? <a href="#" style="color:var(--primary);text-decoration:none;font-weight:500">Регистрирај се бесплатно</a></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:1.05rem"><i class="fas fa-sign-in-alt"></i> <span data-translate-key="btn_login_submit">Најави се</span></button>
+        <p style="text-align:center;margin-top:1.2rem;color:#666;font-size:1rem"><span data-translate-key="login_no_account">Немаш сметка?</span> <a href="#" style="color:var(--primary);text-decoration:none;font-weight:500"><span data-translate-key="btn_register">Регистрирај се бесплатно</span></a></p>
       </form>
     </div>
   </div>
@@ -918,8 +929,8 @@
     <div style="display:flex;align-items:start;gap:12px">
       <i class="fas fa-check-circle" style="color:var(--success);font-size:1.3rem;margin-top:2px"></i>
       <div>
-        <strong id="toast-title" style="display:block;margin-bottom:4px">Успешно!</strong>
-        <span id="toast-message" style="color:#666;font-size:.95rem">Вашата акција е завршена.</span>
+        <strong id="toast-title" style="display:block;margin-bottom:4px"><span data-translate-key="toast_success">Успешно!</span></strong>
+        <span id="toast-message" style="color:#666;font-size:.95rem"><span data-translate-key="toast_message">Вашата акција е завршена.</span></span>
       </div>
     </div>
   </div>
@@ -1112,7 +1123,7 @@
       openModal('scanModal');
       document.getElementById('scan-result').classList.remove('active', 'success', 'error');
       document.getElementById('captureBtn').disabled = false;
-      document.getElementById('captureBtn').innerHTML = '<i class="fas fa-camera"></i> Снимка и Верификација';
+      document.getElementById('captureBtn').innerHTML = '<i class="fas fa-camera"></i> <span data-translate-key="btn_capture">Снимка и Верификација</span>';
       if (navigator.mediaDevices?.getUserMedia) {
         try {
           state.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
@@ -1139,7 +1150,7 @@
       canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = canvas.toDataURL('image/jpeg', 0.85);
       document.getElementById('captureBtn').disabled = true;
-      document.getElementById('captureBtn').innerHTML = '<span class="loading loading-dark"></span> Верификација во тек...';
+      document.getElementById('captureBtn').innerHTML = '<span class="loading loading-dark"></span> <span data-translate-key="btn_verifying">Верификација во тек...</span>';
       try {
         const verification = await state.agents.qwen.verifyItem(imageData, { timestamp: new Date().toISOString(), location: navigator.geolocation ? 'detected' : 'unknown' });
         const resultEl = document.getElementById('scan-result'), msgEl = document.getElementById('scan-message'), ptsEl = document.getElementById('scan-points');
@@ -1154,10 +1165,10 @@
           const celebration = await state.agents.gpt.generateResponse(`Скенирав успешно!`, []);
           if (celebration.gamification_trigger.show_confetti) triggerConfetti();
           if (celebration.gamification_trigger.badge_unlocked) showToast('🏆 Нов Беџ!', `Освоивте: ${celebration.gamification_trigger.badge_unlocked}`, 'success');
-          document.getElementById('scan-next-actions').innerHTML = `<button class="btn btn-primary" onclick="startScan()" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-redo"></i> Скенрај уште</button><button class="btn btn-outline" onclick="closeModal('scanModal');scrollToSection('financial')" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-coins"></i> Види Поени</button>`;
+          document.getElementById('scan-next-actions').innerHTML = `<button class="btn btn-primary" onclick="startScan()" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-redo"></i> <span data-translate-key="btn_scan_again">Скенрај уште</span></button><button class="btn btn-outline" onclick="closeModal('scanModal');scrollToSection('financial')" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-coins"></i> <span data-translate-key="btn_view_points">Види Поени</span></button>`;
           showToast('Успешно!', verification.message_mk, 'success');
         } else {
-          document.getElementById('scan-next-actions').innerHTML = `<button class="btn btn-primary" onclick="startScan()" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-redo"></i> Обиди се повторно</button>`;
+          document.getElementById('scan-next-actions').innerHTML = `<button class="btn btn-primary" onclick="startScan()" style="padding:8px 16px;font-size:.9rem"><i class="fas fa-redo"></i> <span data-translate-key="btn_retry">Обиди се повторно</span></button>`;
         }
       } catch (error) {
         console.error('Scan error:', error);
@@ -1166,7 +1177,7 @@
         showToast('Грешка', 'Проблем со верификацијата. Провери ја интернет врската.', 'error');
       } finally {
         document.getElementById('captureBtn').disabled = false;
-        document.getElementById('captureBtn').innerHTML = '<i class="fas fa-camera"></i> Снимка и Верификација';
+        document.getElementById('captureBtn').innerHTML = '<i class="fas fa-camera"></i> <span data-translate-key="btn_capture">Снимка и Верификација</span>';
       }
     }
 
@@ -1322,7 +1333,7 @@
       });
 
       if(filtered.length === 0){
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#666"><i class="fas fa-search" style="font-size:2rem;margin-bottom:1rem;display:block;opacity:.5"></i>Нема пронајдени молови за твојот пребарување.</div>`;
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#666"><i class="fas fa-search" style="font-size:2rem;margin-bottom:1rem;display:block;opacity:.5"></i><span data-translate-key="malls_no_results">Нема пронајдени молови за твојот пребарување.</span></div>`;
         return;
       }
 
@@ -1336,18 +1347,18 @@
           </div>
           <div class="mall-meta">
             <span><i class="fas fa-map-marker-alt"></i> ${m.city}</span>
-            <span><i class="fas fa-users"></i> ${m.visitors} посетители</span>
+            <span><i class="fas fa-users"></i> ${m.visitors} <span data-translate-key="malls_visitors">посетители</span></span>
             <span><i class="fas fa-ruler-combined"></i> ${m.area}</span>
           </div>
           <div class="mall-note">${m.note}</div>
-          <div class="mall-region">🌍 Регион: ${m.region.charAt(0).toUpperCase()+m.region.slice(1)}</div>
+          <div class="mall-region">🌍 <span data-translate-key="malls_region">Регион</span>: ${m.region.charAt(0).toUpperCase()+m.region.slice(1)}</div>
         `;
         grid.appendChild(card);
       });
     }
 
     // ==================== INIT ====================
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       // Иницијализирај агенти и нивоа
       initAgents(); updateLevelProgress();
       
@@ -1373,6 +1384,14 @@
       }));
       const search = document.getElementById('mallSearch');
       if (search) search.addEventListener('input', () => renderMalls(search.value));
+      
+      // Иницијализирај превод на елементите
+      if (typeof window.ecoTranslateInstance !== 'undefined') {
+        const elements = document.querySelectorAll('[data-translate-key]');
+        if (elements.length > 0) {
+          await window.ecoTranslateInstance.translateUI(Array.from(elements), window.ecoTranslateInstance.currentLang || 'mk');
+        }
+      }
       
       console.log('🌱', CONFIG.appName, 'initialized | 📧', CONFIG.contactEmail);
     });

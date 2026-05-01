@@ -44,7 +44,90 @@
       }
     });
   </script>
+  // ==================== B2B MARKETPLACE FUNCTIONS ====================
+
+// Формулар за барање договор
+async function handleB2BRequest(e) {
+  e.preventDefault();
+  const form = document.getElementById('b2bContractForm');
+  const data = {
+    company: form.querySelector('input[placeholder*="EcoPlast"]').value,
+    contact: form.querySelector('input[placeholder*="Име"]').value,
+    email: form.querySelector('input[type="email"]').value,
+    material: form.querySelector('select').value,
+    volume: form.querySelector('input[type="number"]').value,
+    timestamp: new Date().toISOString()
+  };
   
+  // Mock: Прикажи потврда
+  closeModal('b2bContractModal');
+  showToast('✅ Барање Испратено!', `Ќе ве контактираме на ${data.email} во рок од 48 часа.`, 'success');
+  
+  // 📧 Mock email service – во продукција: испрати до partnerships@makedonecoworld.com
+  await EmailService.send(
+    'partnerships@makedonecoworld.com', 
+    '🏭 Ново B2B Барање за Договор', 
+    `Компанија: ${data.company}\nКонтакт: ${data.contact}\nЕ-пошта: ${data.email}\nМатеријал: ${data.material}\nВолумен: ${data.volume} kg/година`
+  );
+  
+  // 🔄 Рестартирај го формуларот
+  form.reset();
+}
+
+// Преземање на B2B инфо пакет
+function downloadSpecs(type = 'general') {
+  const specs = {
+    general: `# Makedon Eco World – Технички Спецификации
+## Контакти: ${CONFIG.contactEmail}
+## API Base: ${CONFIG.apiBaseUrl}
+## AI Агенти: Qwen (верификација), GPT (конверзација), Claude (комплајанса), Harvey (финансии)
+## Финансиски: 1 сисе = 1 EcoPoint = €${CONFIG.baseValueEur} | Провизија: ${(CONFIG.platformFeePercent*100).toFixed(0)}%
+## Безбедност: TLS 1.3+, PCI DSS, 2FA, токенизација
+## Нивоа: ${CONFIG.levels.map(l => \`${l.icon} \${l.name}: \${l.threshold}+ поени\`).join(' | ')}
+*Генерирано: \${new Date().toISOString()} | Верзија: 1.0.0*`,
+    
+    b2b: `# Makedon Eco World – B2B Партнерски Пакет
+## 🏭 B2B Raw Materials Marketplace
+### Достапни Материјали:
+• rPET (чист): €0.72-0.93/kg (повластена цена)
+• rHDPE: €0.55-0.72/kg
+• rPP: €0.47-0.64/kg (скоро достапно)
+• Алуминиум: €1.02-1.36/kg
+
+### Договорни Услови:
+• Траење: 3 години + опција за продолжување
+• Мин. волумен: 500-1,000 kg/годишно
+• Ценообразување: Фиксно + пазарна компонента
+• Логистика: FOB/CIF по договор
+
+### Бонуси за Долгорочни Партнери:
+✓ Волумен бонус: +2-5% попуст
+✓ Приоритетен пристап до premium партии
+✓ Заедничка ESG аналитика
+✓ Дигитални договори со автоматска верификација
+
+## Контакти:
+📧 partnerships@makedonecoworld.com
+🌐 https://makedonecoworld.github.io/makedon-eco-world/
+*Генерирано: \${new Date().toISOString()} | Верзија: B2B-1.0*`
+  };
+  
+  const content = specs[type] || specs.general;
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = type === 'b2b' ? 'MEW_B2B_Partnership_Package.md' : 'MakedonEcoWorld_Specs.md';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 Преземено!', `Пакетот \`${type.toUpperCase()}\` е преземен.`, 'success');
+}
+
+// Додади ги функциите на window за onclick атрибути
+if (typeof window !== 'undefined') {
+  window.handleB2BRequest = handleB2BRequest;
+  console.log('🔧 B2B Marketplace functions exported');
+}
   <style>
     :root{--primary:#2ecc71;--primary-dark:#27ae60;--secondary:#3498db;--accent:#f39c12;--dark:#2c3e50;--light:#ecf0f1;--danger:#e74c3c;--success:#2ecc71;--gradient:linear-gradient(135deg,#2ecc71 0%,#3498db 50%,#9b59b6 100%);--shadow:0 10px 30px rgba(0,0,0,.15);--card-shadow:0 5px 20px rgba(0,0,0,.08);--border-radius:16px;--transition:all .3s cubic-bezier(.175,.885,.32,1.27)}
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;-webkit-tap-highlight-color:transparent}
